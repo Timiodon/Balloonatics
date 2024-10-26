@@ -3,11 +3,11 @@ using UnityEngine;
 public class Solver : MonoBehaviour
 {
     [SerializeField]
-    private ISimulationObject[] simulationObjects;
+    private ISimulationObject[] _simulationObjects;
 
     void Start()
     {
-        foreach (ISimulationObject simulationObject in simulationObjects)
+        foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.Initialize();
         }
@@ -15,12 +15,12 @@ public class Solver : MonoBehaviour
 
     void FixedUpdate()
     {
-        foreach (ISimulationObject simulationObject in simulationObjects)
+        foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.Precompute();
         }
 
-        foreach (ISimulationObject simulationObject in simulationObjects)
+        foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.SolveConstraints();
 

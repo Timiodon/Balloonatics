@@ -11,16 +11,16 @@ public struct Particle
     }
 
     // Position
-    public Vector3 X { get; set; }
+    public Vector3 X;
 
     // Velocity
-    public Vector3 V { get; set; }
+    public Vector3 V;
 
     // Inverse mass
-    public float W { get; set; }
+    public float W;
 
     // Previous position
-    public Vector3 P { get; set; }
+    public Vector3 P;
 }
 
 public interface ISimulationObject
