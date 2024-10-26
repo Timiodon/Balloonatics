@@ -30,20 +30,16 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         Accelerations[0] = new Vector3(0f, -9.81f, 0f);
 
         // Initialize stretching constraints
+        // we should be able to use eulers formula to precompute the number of edges
         Constraints = new IConstraints[1];
     }
 
-    public void Precompute()
+    public void Precompute(float deltaT)
     {
         throw new System.NotImplementedException();
     }
 
     public void ResolveGroundCollision()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void SolveConstraints()
     {
         throw new System.NotImplementedException();
     }

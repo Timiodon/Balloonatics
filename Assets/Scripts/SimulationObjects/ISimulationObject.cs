@@ -34,10 +34,26 @@ public interface ISimulationObject
     void Initialize();
 
     // Initial guess for next position and velocity
-    void Precompute();
+    void Precompute(float deltaT);
 
-    // Correct initial guesses to satisfy constraints
-    void SolveConstraints();
+    // Correct initial position guesses to satisfy constraints
+    void SolveConstraints(float deltaT)
+    {
+        foreach (IConstraints constraint in Constraints)
+        {
+            constraint.SolveConstraints(Particles, deltaT);
+        }
+    }
+
+    // Correct velocity to match corrected positions
+    void CorrectVelocities(float deltaT)
+    {
+        // TODO: parallelize this
+        for (int i = 0; i < Particles.Length; i++)
+        {
+            Particles[i].V = (Particles[i].X - Particles[i].P) / deltaT;
+        }
+    }
 
     void ResolveGroundCollision();
 }

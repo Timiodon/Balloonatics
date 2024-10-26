@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public struct StretchingConstraint
@@ -53,8 +54,19 @@ public class StretchingConstraints : IConstraints
         return true;
     }
 
-    public void SolveConstraints()
+    public void SolveConstraints(Particle[] xNew, float deltaT)
     {
-        throw new System.NotImplementedException();
+        foreach (var constraint in _constraints)
+        {
+            var (idx1, idx2) = constraint.Indices;
+            var (w1, w2) = constraint.InvMasses;
+            var alpha = constraint.Compliance / (deltaT * deltaT);
+
+            var lambda = -(Vector3.Distance(xNew[idx1].X, xNew[idx2].X) - constraint.RestLength) / (w1 + w2 + alpha);
+            Vector3 grad1 = (xNew[idx1].X - xNew[idx2].X).normalized;
+
+            xNew[idx1].X += lambda * w1 * grad1;
+            xNew[idx2].X += lambda * w1 * -grad1;
+        }
     }
 }

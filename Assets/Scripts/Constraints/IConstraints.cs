@@ -4,5 +4,5 @@ using System.Collections.Generic;
 public interface IConstraints
 {
     bool AddConstraint(List<Particle> particles, List<int> indices, float stiffness);
-    void SolveConstraints();
+    void SolveConstraints(Particle[] xNew, float deltaT);
 }
