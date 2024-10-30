@@ -26,11 +26,6 @@ public class Solver : MonoBehaviour
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.SolveConstraints(deltaT);
-
-            if (simulationObject.CollideWithGround)
-            {
-                simulationObject.ResolveGroundCollision();
-            }
         }
 
         // Object-object collision handling would be here

@@ -25,16 +25,34 @@ public struct Particle
 
 public interface ISimulationObject
 {
+    public const float GRAVITY = -10f;
+
     Particle[] Particles { get; }
     IConstraints[] Constraints { get; }
-    Vector3[] Accelerations { get; set; }
-    bool CollideWithGround { get; }
+    bool UseGravity { get; }
 
     // Initialize positions, velocities, masses, etc.
     void Initialize();
 
     // Initial guess for next position and velocity
-    void Precompute(float deltaT);
+    void Precompute(float deltaT)
+	{
+        // TODO: parallelize this
+        for (int i = 0; i < Particles.Length; i++)
+        {
+            Particles[i].V.y += GRAVITY * deltaT;
+            Particles[i].P = Particles[i].X;
+            Particles[i].X += Particles[i].V * deltaT;
+
+            // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
+            // This causes the particles to "stick" to the ground somewhat
+            if (Particles[i].X.y < 0)
+			{
+                Particles[i].X = Particles[i].P;
+                Particles[i].X.y = 0;
+			}
+        }
+    }
 
     // Correct initial position guesses to satisfy constraints
     void SolveConstraints(float deltaT)
@@ -54,6 +72,4 @@ public interface ISimulationObject
             Particles[i].V = (Particles[i].X - Particles[i].P) / deltaT;
         }
     }
-
-    void ResolveGroundCollision();
 }

@@ -5,13 +5,15 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
     public IConstraints[] Constraints { get; private set; }
-    public Vector3[] Accelerations { get; set; }
-    public bool CollideWithGround { get; }
+    public bool UseGravity { get => _useGravity; }
 
     private Mesh _mesh;
 
     [SerializeField]
     private float _totalMass = 1f;
+
+	[SerializeField]
+    private bool _useGravity = true;
 
     public void Initialize()
     {
@@ -24,23 +26,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             Particles[i] = new Particle(_mesh.vertices[i], Vector3.zero, _totalMass / n);
         }
 
-        // Initialize acceleration with a single vector3 for gravity
-        // TODO: extract into Environment class
-        Accelerations = new Vector3[1];
-        Accelerations[0] = new Vector3(0f, -9.81f, 0f);
-
         // Initialize stretching constraints
         // we should be able to use eulers formula to precompute the number of edges
-        Constraints = new IConstraints[1];
-    }
-
-    public void Precompute(float deltaT)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void ResolveGroundCollision()
-    {
-        throw new System.NotImplementedException();
+        Constraints = new IConstraints[0];
     }
 }
