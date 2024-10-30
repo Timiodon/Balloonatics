@@ -20,15 +20,10 @@ public struct StretchingConstraint
 
 public class StretchingConstraints : IConstraints
 {
-    private List<StretchingConstraint> _constraints;
+    private List<StretchingConstraint> _constraints = new();
 
-    public bool AddConstraint(List<Particle> particles, List<int> indices, float stiffness)
+    public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
-        if (particles.Count != 2)
-        {
-            Debug.LogError("Stretching constraint must have 2 particles");
-            return false;
-        }
         if (indices.Count != 2)
         {
             Debug.LogError("Stretching constraint must have 2 indices");
@@ -40,16 +35,16 @@ public class StretchingConstraints : IConstraints
             return false;
         }
 
-        Particle p1 = particles[0];
-        Particle p2 = particles[1];
+        int idx0 = indices[0];
+        int idx1 = indices[1];
 
-        if (p1.W + p2.W == 0f)
+        if (particles[idx0].W + particles[idx1].W == 0f)
         {
             Debug.LogError("Cumulative inverse mass of particles must be greater than 0");
             return false;
         }
 
-        _constraints.Add(new StretchingConstraint(p1, p2, indices[0], indices[1], stiffness));
+        _constraints.Add(new StretchingConstraint(particles[idx0], particles[idx1], idx0, idx1, stiffness));
 
         return true;
     }

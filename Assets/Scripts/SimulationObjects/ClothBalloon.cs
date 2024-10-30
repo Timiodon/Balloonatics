@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 [RequireComponent(typeof(MeshFilter))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
@@ -17,6 +16,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private bool _useGravity = true;
+
+    [SerializeField]
+    private float _stiffness = 0.5f;
 
     private Vector3[] displacedVertices;
     private int[] vertexIdToParticleIdMap;
@@ -53,11 +55,26 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             Particles[particlesAndIndices.Value] = new Particle(transform.TransformPoint(particlesAndIndices.Key), Vector3.zero, _totalMass / n);
         }
 
-        // Initialize stretching constraints
-        // we should be able to use eulers formula to precompute the number of edges e = 3 * v - 6
-        Constraints = new IConstraints[0];
-        //Constraints[0] = new StretchingConstraints();
+        // Find the set of all unique edges for the stretching constraints
+        HashSet<(int, int)> edgeSet = new();
+        for (int i = 0; i < _mesh.triangles.Length; i += 3)
+        {
+            int a = vertexIdToParticleIdMap[_mesh.triangles[i]];
+            int b = vertexIdToParticleIdMap[_mesh.triangles[i + 1]];
+            int c = vertexIdToParticleIdMap[_mesh.triangles[i + 2]];
+            edgeSet.Add((Mathf.Max(a, b), Mathf.Min(a, b)));
+            edgeSet.Add((Mathf.Max(a, c), Mathf.Min(a, c)));
+            edgeSet.Add((Mathf.Max(b, c), Mathf.Min(b, c)));
+        }
 
+        // Initialize stretching constraints
+        StretchingConstraints constraint = new StretchingConstraints();
+        foreach ((int, int) edge in edgeSet)
+        {
+            constraint.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stiffness);
+        }
+
+        Constraints = new IConstraints[] { constraint };
     }
 
     void Update()
