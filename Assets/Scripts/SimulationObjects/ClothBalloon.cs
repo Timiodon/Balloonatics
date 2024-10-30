@@ -12,7 +12,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private float _totalMass = 1f;
 
-	[SerializeField]
+    [SerializeField]
     private bool _useGravity = true;
 
     public void Initialize()
@@ -23,7 +23,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         Particles = new Particle[n];
         for (int i = 0; i < n; i++)
         {
-            Particles[i] = new Particle(_mesh.vertices[i], Vector3.zero, _totalMass / n);
+            Particles[i] = new Particle(transform.TransformPoint(_mesh.vertices[i]), Vector3.zero, _totalMass / n);
         }
 
         // Initialize stretching constraints

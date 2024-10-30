@@ -36,7 +36,7 @@ public interface ISimulationObject
 
     // Initial guess for next position and velocity
     void Precompute(float deltaT)
-	{
+    {
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
@@ -47,10 +47,10 @@ public interface ISimulationObject
             // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
             // This causes the particles to "stick" to the ground somewhat
             if (Particles[i].X.y < 0)
-			{
+            {
                 Particles[i].X = Particles[i].P;
                 Particles[i].X.y = 0;
-			}
+            }
         }
     }
 

@@ -1,12 +1,20 @@
 using UnityEngine;
+using System.Linq;
 
 public class Solver : MonoBehaviour
 {
+    // GameObject because interfaces can't be serialized
     [SerializeField]
+    private GameObject[] _simulationGameObjects;
+
     private ISimulationObject[] _simulationObjects;
 
     void Start()
     {
+        _simulationObjects = _simulationGameObjects
+            .Select(go => go.GetComponent<ISimulationObject>())
+            .ToArray();
+
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.Initialize();
