@@ -64,4 +64,9 @@ public class StretchingConstraints : IConstraints
             xNew[idx2].X += lambda * w1 * -grad1;
         }
     }
+
+    public void ClearConstraints()
+    {
+        _constraints.Clear();
+    }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
-    public IConstraints[] Constraints { get; private set; }
+    public List<IConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
 
     private Mesh _mesh;
@@ -28,9 +28,10 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     private Vector3[] displacedVertices;
     private int[] vertexIdToParticleIdMap;
+
     private OverpressureConstraints _overpressureConstraints;
     private StretchingConstraints _stretchingConstraints;
-
+    private MouseFollowConstraints _mouseFollowConstraints;
 
     public void Initialize()
     {
@@ -97,11 +98,44 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _overpressureConstraints.Pressure = _pressure;
         _overpressureConstraints.AddConstraint(Particles, new List<int>(), _overpressureStiffness);
 
-        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints };
+        // Initialize mouse follow constraint
+        _mouseFollowConstraints = new MouseFollowConstraints();
+
+        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints };
     }
 
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //RaycastHit hit;
+
+            // Add constraints to follow the mouse
+            _mouseFollowConstraints.ClearConstraints();
+
+            // Ignore raycast of mouse for now and just move all particles of mesh the same
+            // In the future, it would be nice to move only the part where a mesh is grabbed
+            _mouseFollowConstraints.mousePos = Particles[vertexIdToParticleIdMap[0]].X;
+
+            for (int i = 0; i < _mesh.vertices.Length; i++)
+            {
+                _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1000f);
+            }
+
+            Constraints.Add(_mouseFollowConstraints);
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            Constraints.Remove(_mouseFollowConstraints);
+        }
+        if (Input.GetMouseButton(0))
+        {
+            // TODO: figure out best way to update mousePos, since ray may could also not intersect with anything at some time
+            // Possibly we could just do relative movement of mousePos, or find the closest point on the ray to the original grab point
+            _mouseFollowConstraints.mousePos += Input.GetAxis("Mouse X") * Camera.main.transform.right + Input.GetAxis("Mouse Y") * Camera.main.transform.up;
+        }
+
         for (int i = 0; i < displacedVertices.Length; i++)
         {
             // TODO: we may want to interpolate between timesteps here

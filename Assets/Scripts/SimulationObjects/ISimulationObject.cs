@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public struct Particle
@@ -28,7 +29,7 @@ public interface ISimulationObject
     public const float GRAVITY = -10f;
 
     Particle[] Particles { get; }
-    IConstraints[] Constraints { get; }
+    List<IConstraints> Constraints { get; }
     bool UseGravity { get; }
 
     // Initialize positions, velocities, masses, etc.
