@@ -18,10 +18,18 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private bool _useGravity = true;
 
     [SerializeField]
-    private float _stiffness = 0.5f;
+    private float _stretchingStiffness = 0.5f;
+
+    [SerializeField]
+    private float _overpressureStiffness = 1f;
+
+    [SerializeField]
+    private float _pressure = 1f;
 
     private Vector3[] displacedVertices;
     private int[] vertexIdToParticleIdMap;
+    private OverpressureConstraints _overpressureConstraints;
+    private StretchingConstraints _stretchingConstraints;
 
 
     public void Initialize()
@@ -68,13 +76,28 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
 
         // Initialize stretching constraints
-        StretchingConstraints constraint = new StretchingConstraints();
+        _stretchingConstraints = new StretchingConstraints();
         foreach ((int, int) edge in edgeSet)
         {
-            constraint.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stiffness);
+            _stretchingConstraints.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stretchingStiffness);
         }
 
-        Constraints = new IConstraints[] { constraint };
+        // Initialize overpressure constraint
+        _overpressureConstraints = new OverpressureConstraints();
+        Dictionary<int, int[]> triangleToParticleIndices = new();
+
+        for (int i = 0; i < _mesh.triangles.Length; i += 3)
+        {
+            int a = vertexIdToParticleIdMap[_mesh.triangles[i]];
+            int b = vertexIdToParticleIdMap[_mesh.triangles[i + 1]];
+            int c = vertexIdToParticleIdMap[_mesh.triangles[i + 2]];
+            triangleToParticleIndices[i / 3] = new int[] { a, b, c };
+        }
+        _overpressureConstraints.TriangleToParticleIndices = triangleToParticleIndices;
+        _overpressureConstraints.Pressure = _pressure;
+        _overpressureConstraints.AddConstraint(Particles, new List<int>(), _overpressureStiffness);
+
+        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints };
     }
 
     void Update()
@@ -86,6 +109,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             // TODO Transforming to local and back to world every frame is a bit unfortunate. We might want to try to keep everything in global coordinates instead
             displacedVertices[i] = transform.InverseTransformPoint(Particles[vertexIdToParticleIdMap[i]].X);
         }
+
+        _overpressureConstraints.Pressure = _pressure;
 
         _mesh.vertices = displacedVertices;
         _mesh.RecalculateNormals();
