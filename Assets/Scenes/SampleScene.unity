@@ -377,6 +377,96 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 2
+--- !u!1001 &425844570
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.199
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7635826562936255635, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bc1e7f1da32c56f429d0f62e39a7bdd9, type: 2}
+    - target: {fileID: 919132149155446097, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_Name
+      value: Stanford Bunny
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 425844572}
+  m_SourcePrefab: {fileID: 100100000, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+--- !u!1 &425844571 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8164078558771037576, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
+  m_PrefabInstance: {fileID: 425844570}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &425844572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425844571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _totalMass: 1
+  _useGravity: 1
+  _stretchingStiffness: 10
+  _overpressureStiffness: 50
+  _pressure: 1
 --- !u!1 &603764643
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,6 +898,7 @@ MonoBehaviour:
   _simulationGameObjects:
   - {fileID: 1205662228}
   - {fileID: 603764643}
+  - {fileID: 425844571}
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0
@@ -833,3 +924,4 @@ SceneRoots:
   - {fileID: 1299752114}
   - {fileID: 1205662232}
   - {fileID: 603764647}
+  - {fileID: 425844570}
