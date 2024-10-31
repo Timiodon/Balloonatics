@@ -8,7 +8,6 @@ public class OverpressureConstraints : IConstraints
     public Dictionary<int, int[]> TriangleToParticleIndices;
     public float Pressure = 1f;
 
-    private float lambda = 0f;
     private Vector3[] _gradients;
     private float _compliance;
     private float _V0 = 0f; // Initial volume
@@ -72,19 +71,6 @@ public class OverpressureConstraints : IConstraints
                 _gradients[indices[2]] += Vector3.Cross(xNew[indices[0]].X, xNew[indices[1]].X);
             }
 
-
-            /* Naive Attempt without considering compliance and XPBD, but somehow works */
-            float lambda_denom = 0;
-            for (int i = 0; i < xNew.Length; i++)
-            {
-                lambda_denom += xNew[i].W * Vector3.Dot(_gradients[i], _gradients[i]);
-            }
-            for (int i = 0; i < xNew.Length; i++)
-            {
-                xNew[i].X -= C / lambda_denom * xNew[i].W * _gradients[i];
-            }
-
-            /* XPBD Attempt, for some reason results in shrinking volume
             float alpha = _compliance / (deltaT * deltaT);
             float lambda_denom = alpha;
             for (int i = 0; i < xNew.Length; i++)
@@ -94,14 +80,12 @@ public class OverpressureConstraints : IConstraints
 
             if (lambda_denom != 0)
             {
-                float deltaLambda = (-C - alpha * lambda) / lambda_denom;
-                lambda += deltaLambda;
+                float deltaLambda = -C / lambda_denom; // We don't need - alpha * lambda term since we only do one iteration, right?
                 for (int i = 0; i < xNew.Length; i++)
                 {
                     xNew[i].X += deltaLambda * xNew[i].W * _gradients[i];
                 }
             }
-            */
         }
     }
 }
