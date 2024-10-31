@@ -1,5 +1,7 @@
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class Solver : MonoBehaviour
 {
@@ -41,6 +43,15 @@ public class Solver : MonoBehaviour
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.CorrectVelocities(deltaT);
-        }    
+        }
+    }
+
+    void Update()
+    {
+        // Reset scene with R
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }
