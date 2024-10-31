@@ -485,7 +485,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &603764645
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -568,7 +568,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _stretchingStiffness: 0.5
+  _stretchingStiffness: 50
   _overpressureStiffness: 50
   _pressure: 1
 --- !u!1 &798618106
@@ -751,7 +751,6 @@ GameObject:
   - component: {fileID: 1205662231}
   - component: {fileID: 1205662230}
   - component: {fileID: 1205662234}
-  - component: {fileID: 1205662235}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -841,31 +840,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _stretchingStiffness: 0.5
+  _stretchingStiffness: 50
   _overpressureStiffness: 1
   _pressure: 1
---- !u!64 &1205662235
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205662228}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1299752112
 GameObject:
   m_ObjectHideFlags: 0

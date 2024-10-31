@@ -108,32 +108,34 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     {
         if (Input.GetMouseButtonDown(0))
         {
-            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             // Add constraints to follow the mouse
             _mouseFollowConstraints.ClearConstraints();
 
-            // Ignore raycast of mouse for now and just move all particles of mesh the same
-            // In the future, it would be nice to move only the part where a mesh is grabbed
-            _mouseFollowConstraints.mousePos = Particles[vertexIdToParticleIdMap[0]].X;
-
-            for (int i = 0; i < _mesh.vertices.Length; i++)
+            int closestVertex = FindClosestVertex(ray, Particles);
+            if (closestVertex != -1)
             {
-                _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1000f);
-            }
+                _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
 
-            Constraints.Add(_mouseFollowConstraints);
+                for (int i = 0; i < _mesh.vertices.Length; i++)
+                {
+                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1f);
+                }
+
+                Constraints.Add(_mouseFollowConstraints);
+            }
         }
         if (Input.GetMouseButtonUp(0))
         {
-            Constraints.Remove(_mouseFollowConstraints);
+            if (Constraints.Contains(_mouseFollowConstraints))
+            {
+                Constraints.Remove(_mouseFollowConstraints);
+            }
         }
         if (Input.GetMouseButton(0))
         {
-            // TODO: figure out best way to update mousePos, since ray may could also not intersect with anything at some time
-            // Possibly we could just do relative movement of mousePos, or find the closest point on the ray to the original grab point
-            _mouseFollowConstraints.mousePos += Input.GetAxis("Mouse X") * Camera.main.transform.right + Input.GetAxis("Mouse Y") * Camera.main.transform.up;
+            _mouseFollowConstraints.mousePos = FindClosestPointOnRay(Camera.main.ScreenPointToRay(Input.mousePosition), Particles);
         }
 
         for (int i = 0; i < displacedVertices.Length; i++)
@@ -149,5 +151,47 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _mesh.vertices = displacedVertices;
         _mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
+    }
+
+    // Finds closest vertex index to ray that is at most 0.2 units away, otherwise returns -1
+    private int FindClosestVertex(Ray ray, Particle[] particles)
+    {
+        int closestIndex = -1;
+        float closestDistance = Mathf.Infinity;
+
+        for (int i = 0; i < particles.Length; i++)
+        {
+            float distance = Vector3.Cross(ray.direction, particles[i].X - ray.origin).magnitude;
+
+            if (distance < closestDistance && distance < 0.2f)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        return closestIndex;
+    }
+
+    private Vector3 FindClosestPointOnRay(Ray ray, Particle[] particles)
+    {
+        float closestDistance = Mathf.Infinity;
+        Vector3 closestPointOnRay = Vector3.zero;
+
+        for (int i = 0; i < particles.Length; i++)
+        {
+            Vector3 originToVertex = particles[i].X - ray.origin;
+            float projectionLength = Vector3.Dot(originToVertex, ray.direction.normalized);
+            Vector3 pointOnRay = ray.origin + ray.direction.normalized * projectionLength;
+            float distance = Vector3.Distance(pointOnRay, particles[i].X);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestPointOnRay = pointOnRay;
+            }
+        }
+
+        return closestPointOnRay;
     }
 }

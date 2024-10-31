@@ -62,6 +62,9 @@ public class MouseFollowConstraints : IConstraints
             var lambda = -(Vector3.Distance(xNew[idx].X, mousePos) - constraint.RestLength) / (w1 + _invMouseMass + alpha);
             Vector3 grad1 = (xNew[idx].X - mousePos).normalized;
 
+            // Show springs in editor
+            Debug.DrawLine(xNew[idx].X, mousePos, Color.blue);
+
             xNew[idx].X += lambda * w1 * grad1;
         }
     }
