@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
-public struct StretchingConstraint
+
+public struct BendingConstraint
 {
-    public StretchingConstraint(Particle p1, Particle p2, int idx1, int idx2, float stiffness)
+    public BendingConstraint(Particle p1, Particle p2, int idx1, int idx2, float stiffness)
     {
         RestLength = Vector3.Distance(p1.X, p2.X);
         Indices = (idx1, idx2);
@@ -18,7 +18,7 @@ public struct StretchingConstraint
     public float Compliance;
 }
 
-public class StretchingConstraints : IConstraints
+public class BendingConstraints
 {
     private List<StretchingConstraint> _constraints = new();
 
