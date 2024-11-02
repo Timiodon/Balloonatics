@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
@@ -23,7 +22,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [Header("Constraint stiffnesses")]
     [SerializeField]
     private float _stretchingStiffness = 0.5f;
-    
+
     [SerializeField]
     private float _overpressureStiffness = 1f;
 
@@ -142,7 +141,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
     }
 
     void Update()
@@ -237,6 +236,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
 
         return closestPointOnRay;
+    }
+
     // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
     private int[] FindTriangleNeighbours()
     {
@@ -264,7 +265,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         // the global edge number of this edge in the neighbouring triangle or -1 if this edge has no neighbour
         int[] neighbours = Enumerable.Repeat(-1, _mesh.triangles.Length).ToArray();
         int idx = 0;
-        while(idx < edgeSet.Count)
+        while (idx < edgeSet.Count)
         {
             var e0 = edgeSet[idx];
             idx++;
