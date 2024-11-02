@@ -26,7 +26,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private float _overpressureStiffness = 1f;
 
     [SerializeField]
-    private float _bendingStiffness = 1f;
+    private float _bendingStiffness = 0.5f;
 
     [SerializeField]
     private float _pressure = 1f;
@@ -126,7 +126,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints, /*_bendingConstraints*/ };
+        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints,/* _bendingConstraints */};
     }
 
     void Update()
