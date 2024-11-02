@@ -39,7 +39,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _bendingComplianceScale = 1f;
 
-    [SerializeField, Range(0.5f, MAX_COMPLIANCE_SCALE)]
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _pressure = 1f;
 
     private Vector3[] displacedVertices;
