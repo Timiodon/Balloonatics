@@ -157,9 +157,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             int a = vertexIdToParticleIdMap[_mesh.triangles[i]];
             int b = vertexIdToParticleIdMap[_mesh.triangles[i + 1]];
             int c = vertexIdToParticleIdMap[_mesh.triangles[i + 2]];
-            edgeSet.Add((Mathf.Min(a, b), Mathf.Max(a, b), 3 * i));
-            edgeSet.Add((Mathf.Min(b, c), Mathf.Max(b, c), 3 * i + 1));
-            edgeSet.Add((Mathf.Min(a, c), Mathf.Max(a, c), 3 * i + 2));
+            edgeSet.Add((Mathf.Min(a, b), Mathf.Max(a, b), i));
+            edgeSet.Add((Mathf.Min(b, c), Mathf.Max(b, c), i + 1));
+            edgeSet.Add((Mathf.Min(a, c), Mathf.Max(a, c), i + 2));
         }
 
         // sort so common edges are consecutive in List
@@ -171,7 +171,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         // Given the global edge number g of an edge, neighbours[g] returns
         // the global edge number of this edge in the neighbouring triangle or -1 if this edge has no neighbour
-        int[] neighbours = Enumerable.Repeat(-1, 3 * _mesh.triangles.Length).ToArray();
+        int[] neighbours = Enumerable.Repeat(-1, _mesh.triangles.Length).ToArray();
         int idx = 0;
         while(idx < edgeSet.Count)
         {
