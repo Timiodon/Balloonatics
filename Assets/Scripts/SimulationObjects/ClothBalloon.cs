@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
@@ -17,13 +19,28 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useGravity = true;
 
+
+    [Header("Constraint stiffnesses")]
     [SerializeField]
     private float _stretchingStiffness = 0.5f;
-
+    
     [SerializeField]
     private float _overpressureStiffness = 1f;
 
     [SerializeField]
+    private float _bendingStiffness = 0.5f;
+
+    private const float MIN_COMPLIANCE_SCALE = 0.01f;
+    private const float MAX_COMPLIANCE_SCALE = 200f;
+
+    [Header("Compliance Scales")]
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    private float _stretchingComplianceScale = 1f;
+
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    private float _bendingComplianceScale = 1f;
+
+    [SerializeField, Range(0.5f, MAX_COMPLIANCE_SCALE)]
     private float _pressure = 1f;
 
     private Vector3[] displacedVertices;
@@ -32,6 +49,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private OverpressureConstraints _overpressureConstraints;
     private StretchingConstraints _stretchingConstraints;
     private MouseFollowConstraints _mouseFollowConstraints;
+    private BendingConstraints _bendingConstraints;
+
 
     public void Initialize()
     {
@@ -100,8 +119,30 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         // Initialize mouse follow constraint
         _mouseFollowConstraints = new MouseFollowConstraints();
+        // Initialize bending constraint, Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
+        _bendingConstraints = new();
+        int[] neighbours = FindTriangleNeighbours();
+        for (int i = 0; i < _mesh.triangles.Length / 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                int idx0 = vertexIdToParticleIdMap[_mesh.triangles[3 * i + j]];
+                int idx1 = vertexIdToParticleIdMap[_mesh.triangles[3 * i + (j + 1) % 3]];
 
-        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints };
+                int neighbour = neighbours[3 * i + j];
+                if (neighbour >= 0)
+                {
+                    int ni = neighbour / 3;
+                    int nj = neighbour % 3;
+                    int idx2 = vertexIdToParticleIdMap[_mesh.triangles[3 * i + (j + 2) % 3]];
+                    int idx3 = vertexIdToParticleIdMap[_mesh.triangles[3 * ni + (nj + 2) % 3]];
+                    // for index order, see Figure 1 https://www.cs.ubc.ca/~rbridson/docs/cloth2003.pdf
+                    _bendingConstraints.AddConstraint(Particles, new List<int> { idx2, idx3, idx0, idx1 }, _bendingStiffness);
+                }
+            }
+        }
+
+        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
     }
 
     void Update()
@@ -146,6 +187,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             displacedVertices[i] = transform.InverseTransformPoint(Particles[vertexIdToParticleIdMap[i]].X);
         }
 
+        _stretchingConstraints.ComplianceScale = _stretchingComplianceScale;
+        _bendingConstraints.ComplianceScale = _bendingComplianceScale;
         _overpressureConstraints.Pressure = _pressure;
 
         _mesh.vertices = displacedVertices;
@@ -194,5 +237,51 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
 
         return closestPointOnRay;
+    // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
+    private int[] FindTriangleNeighbours()
+    {
+        // Find the set of all edges with their corresponding global edge number
+        // The global edge number of edge j in triangle i is 3*i + j
+        List<(int, int, int)> edgeSet = new();
+        for (int i = 0; i < _mesh.triangles.Length; i += 3)
+        {
+            int a = vertexIdToParticleIdMap[_mesh.triangles[i]];
+            int b = vertexIdToParticleIdMap[_mesh.triangles[i + 1]];
+            int c = vertexIdToParticleIdMap[_mesh.triangles[i + 2]];
+            edgeSet.Add((Mathf.Min(a, b), Mathf.Max(a, b), i));
+            edgeSet.Add((Mathf.Min(b, c), Mathf.Max(b, c), i + 1));
+            edgeSet.Add((Mathf.Min(a, c), Mathf.Max(a, c), i + 2));
+        }
+
+        // sort so common edges are consecutive in List
+        edgeSet.Sort(delegate ((int, int, int) e1, (int, int, int) e2)
+        {
+            return e1.Item1.CompareTo(e2.Item1) != 0 ? e1.Item1.CompareTo(e2.Item1) : e1.Item2.CompareTo(e2.Item2);
+        });
+
+
+        // Given the global edge number g of an edge, neighbours[g] returns
+        // the global edge number of this edge in the neighbouring triangle or -1 if this edge has no neighbour
+        int[] neighbours = Enumerable.Repeat(-1, _mesh.triangles.Length).ToArray();
+        int idx = 0;
+        while(idx < edgeSet.Count)
+        {
+            var e0 = edgeSet[idx];
+            idx++;
+            if (idx < edgeSet.Count)
+            {
+                var e1 = edgeSet[idx];
+                if (e0.Item1 == e1.Item1 && e0.Item2 == e1.Item2)
+                {
+                    neighbours[e0.Item3] = e1.Item3;
+                    // If we pretend the neighbour relation is not symmetric, we don't need to
+                    // take care to not add duplicate constraints later
+                    // neighbours[e1.Item3] = e0.Item3;
+                }
+                idx++;
+            }
+        }
+
+        return neighbours;
     }
 }
