@@ -51,7 +51,7 @@ public class BendingConstraints : IConstraints
         Vector3 n2 = Vector3.Cross(p3.X - p1.X, p2.X - p1.X).normalized;
         float cosPhi = Vector3.Dot(n1, n2);
 
-        Mathf.Clamp(cosPhi, -1.0f, 1.0f);
+        cosPhi = Mathf.Clamp(cosPhi, -1.0f, 1.0f);
         float phi = Mathf.Acos(cosPhi);
 
         _constraints.Add(new BendingConstraint(particles, indices, phi, stiffness));
@@ -92,7 +92,7 @@ public class BendingConstraints : IConstraints
             n1.Normalize();
             n2.Normalize();
             float cosPhi = Vector3.Dot(n1, n2);
-            Mathf.Clamp(cosPhi, -1.0f, 1.0f);
+            cosPhi = Mathf.Clamp(cosPhi, -1.0f, 1.0f);
             float phi = Mathf.Acos(cosPhi);
 
             // Real phi = (-0.6981317 * dot * dot - 0.8726646) * dot + 1.570796;	// fast approximation
