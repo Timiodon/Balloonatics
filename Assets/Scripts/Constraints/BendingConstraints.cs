@@ -21,6 +21,7 @@ public struct BendingConstraint
 public class BendingConstraints : IConstraints
 {
     private List<BendingConstraint> _constraints = new();
+    public float ComplianceScale = 1f;
 
     public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
@@ -40,9 +41,9 @@ public class BendingConstraints : IConstraints
         Particle p2 = particles[indices[2]];
         Particle p3 = particles[indices[3]];
         Vector3 e = p3.X - p2.X;
-        if (e.magnitude < 1e6)
+        if (e.magnitude < 1e-6)
         {
-            Debug.LogError("Triangles are degenerate. Shared edge length is approx. 0");
+            Debug.LogError("Triangles are degenerate. Shared edge length is: " + e.magnitude);
             return false;
         }
 
@@ -66,13 +67,13 @@ public class BendingConstraints : IConstraints
             // Code adapted from PBS Ex. 4
             var (idx0, idx1, idx2, idx3) = constraint.Indices;
             var (w0, w1, w2, w3) = constraint.InvMasses;
-            var alpha = constraint.Compliance / (deltaT * deltaT);
+            var alpha = constraint.Compliance * ComplianceScale / (deltaT * deltaT);
             Particle p0 = xNew[idx0], p1 = xNew[idx1], p2 = xNew[idx2], p3 = xNew[idx3];
 
             Vector3 e =  p3.X - p2.X;
             float elen = e.magnitude;
             // Case triangle is degenerate
-            if (elen < 1e6)
+            if (elen < 1e-6)
                 return;
             float invElen = 1.0f / elen;
 

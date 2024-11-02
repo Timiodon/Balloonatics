@@ -19,16 +19,28 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useGravity = true;
 
+
+    [Header("Constraint stiffnesses")]
     [SerializeField]
     private float _stretchingStiffness = 0.5f;
-
+    
     [SerializeField]
     private float _overpressureStiffness = 1f;
 
     [SerializeField]
     private float _bendingStiffness = 0.5f;
 
-    [SerializeField]
+    private const float MIN_COMPLIANCE_SCALE = 0.01f;
+    private const float MAX_COMPLIANCE_SCALE = 200f;
+
+    [Header("Compliance Scales")]
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    private float _stretchingComplianceScale = 1f;
+
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    private float _bendingComplianceScale = 1f;
+
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _pressure = 1f;
 
     private Vector3[] displacedVertices;
@@ -126,7 +138,22 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints,/* _bendingConstraints */};
+        Constraints = new IConstraints[] { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+    }
+
+    public void SolveConstraints(float deltaT)
+    {
+        // Custom implementation of SolveConstraints
+        foreach (IConstraints constraint in Constraints)
+        {
+            if (constraint is BendingConstraints && _pressure >= 1f)
+            {
+                constraint.SolveConstraints(Particles, deltaT);
+            } else
+            {
+                constraint.SolveConstraints(Particles, deltaT);
+            }
+        }
     }
 
     void Update()
@@ -139,6 +166,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             displacedVertices[i] = transform.InverseTransformPoint(Particles[vertexIdToParticleIdMap[i]].X);
         }
 
+        _stretchingConstraints.ComplianceScale = _stretchingComplianceScale;
+        _bendingConstraints.ComplianceScale = _bendingComplianceScale;
         _overpressureConstraints.Pressure = _pressure;
 
         _mesh.vertices = displacedVertices;

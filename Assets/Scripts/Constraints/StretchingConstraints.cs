@@ -21,6 +21,7 @@ public struct StretchingConstraint
 public class StretchingConstraints : IConstraints
 {
     private List<StretchingConstraint> _constraints = new();
+    public float ComplianceScale = 1f;
 
     public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
@@ -55,7 +56,7 @@ public class StretchingConstraints : IConstraints
         {
             var (idx1, idx2) = constraint.Indices;
             var (w1, w2) = constraint.InvMasses;
-            var alpha = constraint.Compliance / (deltaT * deltaT);
+            var alpha = constraint.Compliance * ComplianceScale / (deltaT * deltaT);
 
             float C = Vector3.Distance(xNew[idx1].X, xNew[idx2].X) - constraint.RestLength;
             // Solve constraints only if change in volume is non-zero
