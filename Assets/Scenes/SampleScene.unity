@@ -710,6 +710,7 @@ GameObject:
   - component: {fileID: 904979058}
   - component: {fileID: 904979057}
   - component: {fileID: 904979056}
+  - component: {fileID: 904979059}
   m_Layer: 0
   m_Name: RigidCube
   m_TagString: Untagged
@@ -806,6 +807,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 904979054}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &904979059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904979054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a1a7749d4aa1a546a2cb277cee7822d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _totalMass: 1
+  _useGravity: 1
 --- !u!1 &906028839
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,6 +1047,7 @@ MonoBehaviour:
   - {fileID: 603764643}
   - {fileID: 425844571}
   - {fileID: 1205662228}
+  - {fileID: 904979054}
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0

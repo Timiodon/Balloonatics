@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -27,6 +26,10 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public void Initialize()
     {
         Constraints = new List<IConstraints>();
+
+        Particles = new Particle[1];
+        Particles[0] = new Particle(transform.position, Vector3.zero, _totalMass);
+        _mouseFollowConstraints = new MouseFollowConstraints();
     }
 
 
@@ -75,12 +78,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
             // Add constraints to follow the mouse
             _mouseFollowConstraints.ClearConstraints();
 
-            int closestVertex = Utils.FindClosestVertex(ray, Particles);
+            int closestVertex = Utils.FindClosestVertex(ray, Particles, 2f);
             if (closestVertex != -1)
             {
                 _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
                 // For now we only add constraint to center of mass particle
-                _mouseFollowConstraints.AddConstraint(Particles, new List<int> { 0 }, 1f);
+                _mouseFollowConstraints.AddConstraint(Particles, new List<int> { 0 }, 100f);
                 Constraints.Add(_mouseFollowConstraints);
             }
         }

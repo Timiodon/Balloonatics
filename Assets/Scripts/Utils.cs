@@ -4,7 +4,7 @@ public static class Utils
 {
     // Finds closest vertex index to ray that is at most 0.42 units away, otherwise returns -1
     // TODO: it would probably be better to check whether the ray intersects the mesh instead of checking the distance to the closest vertex
-    public static int FindClosestVertex(Ray ray, Particle[] particles)
+    public static int FindClosestVertex(Ray ray, Particle[] particles, float distanceThreshold = 0.42f)
     {
         int closestIndex = -1;
         float closestDistance = Mathf.Infinity;
@@ -13,7 +13,7 @@ public static class Utils
         {
             float distance = Vector3.Cross(ray.direction, particles[i].X - ray.origin).magnitude;
 
-            if (distance < closestDistance && distance < 0.42f)
+            if (distance < closestDistance && distance < distanceThreshold)
             {
                 closestDistance = distance;
                 closestIndex = i;
