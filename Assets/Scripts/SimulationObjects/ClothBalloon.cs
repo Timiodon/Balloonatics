@@ -153,7 +153,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             // Add constraints to follow the mouse
             _mouseFollowConstraints.ClearConstraints();
 
-            int closestVertex = FindClosestVertex(ray, Particles);
+            int closestVertex = Utils.FindClosestVertex(ray, Particles);
             if (closestVertex != -1)
             {
                 _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
@@ -175,7 +175,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
         if (Input.GetMouseButton(0))
         {
-            _mouseFollowConstraints.mousePos = FindClosestPointOnRay(Camera.main.ScreenPointToRay(Input.mousePosition), Particles);
+            _mouseFollowConstraints.mousePos = Utils.FindClosestPointOnRay(Camera.main.ScreenPointToRay(Input.mousePosition), Particles);
         }
 
         for (int i = 0; i < displacedVertices.Length; i++)
@@ -193,49 +193,6 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _mesh.vertices = displacedVertices;
         _mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
-    }
-
-    // Finds closest vertex index to ray that is at most 0.42 units away, otherwise returns -1
-    // TODO: it would probably be better to check whether the ray intersects the mesh instead of checking the distance to the closest vertex
-    private int FindClosestVertex(Ray ray, Particle[] particles)
-    {
-        int closestIndex = -1;
-        float closestDistance = Mathf.Infinity;
-
-        for (int i = 0; i < particles.Length; i++)
-        {
-            float distance = Vector3.Cross(ray.direction, particles[i].X - ray.origin).magnitude;
-
-            if (distance < closestDistance && distance < 0.42f)
-            {
-                closestDistance = distance;
-                closestIndex = i;
-            }
-        }
-
-        return closestIndex;
-    }
-
-    private Vector3 FindClosestPointOnRay(Ray ray, Particle[] particles)
-    {
-        float closestDistance = Mathf.Infinity;
-        Vector3 closestPointOnRay = Vector3.zero;
-
-        for (int i = 0; i < particles.Length; i++)
-        {
-            Vector3 originToVertex = particles[i].X - ray.origin;
-            float projectionLength = Vector3.Dot(originToVertex, ray.direction.normalized);
-            Vector3 pointOnRay = ray.origin + ray.direction.normalized * projectionLength;
-            float distance = Vector3.Distance(pointOnRay, particles[i].X);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestPointOnRay = pointOnRay;
-            }
-        }
-
-        return closestPointOnRay;
     }
 
     // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
