@@ -841,6 +841,7 @@ MonoBehaviour:
   _useGravity: 0
   _externalTorque: {x: 0, y: 0, z: 0}
   _shape: 0
+  mouseCompliance: 1
 --- !u!1 &906028839
 GameObject:
   m_ObjectHideFlags: 0

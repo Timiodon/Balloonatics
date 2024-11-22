@@ -41,7 +41,8 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     private float mouseDistance;
     private float l0;
     private float mouseMass = 1;
-    private float mouseCompliance = 0.01f;
+    [SerializeField]
+    private float mouseCompliance = 1f;
     private bool solveMouseFollow = false;
 
     public void Initialize()
@@ -169,10 +170,13 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
             // Update states
             Particles[0].X += w2 * lambda * n;
-            Vector3 tmp = 0.5f * lambda * _invI0.MultiplyVector(Vector3.Cross(r2, n));
-            Quaternion dq = new Quaternion(tmp.x, tmp.y, tmp.z, 0) * _q;
-            //_q = _q * dq;
-            //_q.Normalize();
+            Vector3 w = 0.5f * lambda * _invI0.MultiplyVector(Vector3.Cross(r2, n));
+            Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * _q;
+            _q.x = _q.x + dq.x;
+            _q.y = _q.y + dq.y;
+            _q.z = _q.z + dq.z;
+            _q.w = _q.w + dq.w;
+            _q.Normalize();
 
             // Visualize mouse follow constraint
             Debug.DrawLine(a1, a2, Color.red);
