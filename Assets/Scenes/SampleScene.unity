@@ -820,7 +820,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _totalMass: 1
-  _useGravity: 1
+  _useGravity: 0
+  _externalTorque: {x: 1, y: 0, z: 0}
+  _shape: 0
 --- !u!1 &906028839
 GameObject:
   m_ObjectHideFlags: 0
