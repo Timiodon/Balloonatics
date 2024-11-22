@@ -36,6 +36,12 @@ public class Solver : MonoBehaviour
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.SolveConstraints(deltaT);
+
+            if (simulationObject.GetType() == typeof(RigidBody))
+            {
+                RigidBody rigidBody = (RigidBody)simulationObject;
+                rigidBody.SolveRigidBodyConstraints(deltaT);
+            }
         }
 
         // Object-object collision handling would be here
