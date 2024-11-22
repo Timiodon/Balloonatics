@@ -41,7 +41,9 @@ public interface ISimulationObject
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
-            Particles[i].V.y += GRAVITY * deltaT;
+            if (UseGravity)
+                Particles[i].V.y += GRAVITY * deltaT;
+
             Particles[i].P = Particles[i].X;
             Particles[i].X += Particles[i].V * deltaT;
 
