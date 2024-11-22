@@ -45,6 +45,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private Vector3[] displacedVertices;
     private int[] vertexIdToParticleIdMap;
 
+    private float _mouseDistance;
+
     private OverpressureConstraints _overpressureConstraints;
     private StretchingConstraints _stretchingConstraints;
     private MouseFollowConstraints _mouseFollowConstraints;
@@ -157,6 +159,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             if (closestVertex != -1)
             {
                 _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
+                _mouseDistance = Vector3.Distance(Particles[closestVertex].X, ray.origin);
 
                 for (int i = 0; i < _mesh.vertices.Length; i++)
                 {
@@ -175,8 +178,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
         if (Input.GetMouseButton(0))
         {
-            _mouseFollowConstraints.mousePos = Utils.FindClosestPointOnRay(Camera.main.ScreenPointToRay(Input.mousePosition), Particles);
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            _mouseFollowConstraints.mousePos = mouseRay.origin + mouseRay.direction * _mouseDistance;
         }
+
+        // Use mouse wheel to adjust mouse distance
+        _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
 
         for (int i = 0; i < displacedVertices.Length; i++)
         {
