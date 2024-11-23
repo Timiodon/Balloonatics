@@ -76,7 +76,8 @@ public class SpatialHashGrid
     }
 
     /// <summary>
-    /// Returns the particle indices of the Particles closer than maxDistance to pos
+    /// Returns the particle indices of the Particles closer than maxDistance to pos. The returned list 
+    /// may contain duplicates as well as false positives.
     /// </summary>
     /// <param name="pos"></param>
     /// <param name="maxDistance"></param>
@@ -87,6 +88,10 @@ public class SpatialHashGrid
         int3 minPos = GridPosition(pos - maxDistVector, _cellSize);
         int3 maxPos = GridPosition(pos + maxDistVector, _cellSize);
 
+        int3 tmp = maxPos - minPos;
+        int n = (tmp.x + 1) * (tmp.y + 1) * (tmp.z + 1);
+        Debug.Log("number of queried cells: " + n + "\n");
+
         List<int> neighbours = new();
         for (int xi = minPos.x; xi <= maxPos.x; xi++)
         {
@@ -94,11 +99,11 @@ public class SpatialHashGrid
             {
                 for (int zi = minPos.z; zi <= maxPos.z; zi++)
                 {
-                    int tableIndex = Hash(GridPosition(new(xi, yi, zi), _cellSize), _tableSize);
+                    int tableIndex = Hash(new(xi, yi, zi), _tableSize);
                     int start = _table[tableIndex];
                     int end = _table[tableIndex + 1];
 
-                    for (int i = start; i <= end; i++)
+                    for (int i = start; i < end; i++)
                         neighbours.Add(_gridEntries[i]);
                 }
             }
