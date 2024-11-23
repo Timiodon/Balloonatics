@@ -26,6 +26,7 @@ public class Solver : MonoBehaviour
             .ToArray();
 
         _collisionHandler.Objects = _simulationObjects;
+        _collisionHandler.Initialize();
 
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
