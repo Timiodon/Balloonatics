@@ -8,14 +8,24 @@ public class Solver : MonoBehaviour
     // GameObject because interfaces can't be serialized
     [SerializeField]
     private GameObject[] _simulationGameObjects;
-
     private ISimulationObject[] _simulationObjects;
+
+    [SerializeField]
+    private int _simulationLoopSubsteps = 1;
+
+    [SerializeField]
+    private CollisionHandler _collisionHandler;
+    [SerializeField]
+    private bool _handleCollisions = true;
+    
 
     void Start()
     {
         _simulationObjects = _simulationGameObjects
             .Select(go => go.GetComponent<ISimulationObject>())
             .ToArray();
+
+        _collisionHandler.Objects = _simulationObjects;
 
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
@@ -25,24 +35,33 @@ public class Solver : MonoBehaviour
 
     void FixedUpdate()
     {
-        // TODO: Maybe we need to scale this to do smaller steps
         float deltaT = Time.fixedDeltaTime;
+        float scaledDeltaT = deltaT / _simulationLoopSubsteps;
+        float maxVelocity = 0.2f * _collisionHandler.ParticleRadius / scaledDeltaT;
 
-        foreach (ISimulationObject simulationObject in _simulationObjects)
+        _collisionHandler.HandleCols = _handleCollisions;
+        // If we query the grids directly after creating them with 2 times the max travelling distance in the whole FixedUpdate loop
+        // we get all possible collision candidates but do not have to do this expensive call in the substep loop
+        _collisionHandler.CreateGrids(2f * maxVelocity * deltaT);
+        
+        for (int i = 0; i < _simulationLoopSubsteps; i++)
         {
-            simulationObject.Precompute(deltaT);
-        }
+            foreach (ISimulationObject simulationObject in _simulationObjects)
+            {
+                simulationObject.Precompute(scaledDeltaT);
+            }
 
-        foreach (ISimulationObject simulationObject in _simulationObjects)
-        {
-            simulationObject.SolveConstraints(deltaT);
-        }
+            foreach (ISimulationObject simulationObject in _simulationObjects)
+            {
+                simulationObject.SolveConstraints(scaledDeltaT);
+            }
 
-        // Object-object collision handling would be here
+            _collisionHandler.HandleCollisions(scaledDeltaT);
 
-        foreach (ISimulationObject simulationObject in _simulationObjects)
-        {
-            simulationObject.CorrectVelocities(deltaT);
+            foreach (ISimulationObject simulationObject in _simulationObjects)
+            {
+                simulationObject.CorrectVelocities(scaledDeltaT);
+            }
         }
     }
 

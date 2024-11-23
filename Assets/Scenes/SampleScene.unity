@@ -405,15 +405,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.4696261
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.084866
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 15.516685
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -486,6 +486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
+  _handleSelfCollision: 1
   _stretchingStiffness: 100
   _overpressureStiffness: 50
   _bendingStiffness: 100
@@ -510,7 +511,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &603764645
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -573,7 +574,7 @@ Transform:
   m_GameObject: {fileID: 603764643}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.2826262, y: 5.664866, z: 14.540685}
+  m_LocalPosition: {x: 1, y: 2, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -593,6 +594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
+  _handleSelfCollision: 1
   _stretchingStiffness: 50
   _overpressureStiffness: 50
   _bendingStiffness: 0.5
@@ -624,7 +626,7 @@ Transform:
   m_GameObject: {fileID: 743934075}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4596261, y: -5.084866, z: -15.715685}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -813,7 +815,6 @@ GameObject:
   - component: {fileID: 1205662231}
   - component: {fileID: 1205662230}
   - component: {fileID: 1205662234}
-  - component: {fileID: 1205662235}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -883,7 +884,7 @@ Transform:
   m_GameObject: {fileID: 1205662228}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 6, z: 1}
+  m_LocalPosition: {x: 1, y: 1, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -896,35 +897,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1205662228}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
+  _handleSelfCollision: 1
   _stretchingStiffness: 50
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
-  _stretchingComplianceScale: 1
+  _stretchingComplianceScale: 2
   _bendingComplianceScale: 2
   _pressure: 1
---- !u!114 &1205662235
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205662228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 290f3ff6d882a2c438329ad0b9383ff7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _queryPrefab: {fileID: 5067644472732492061, guid: c64b96c7c14a92944b267e4ded8356a0, type: 3}
-  _queryPosition: {x: 0, y: 0, z: 0}
-  _queryRadius: 0
-  _showQueryResult: 0
 --- !u!1 &1299752112
 GameObject:
   m_ObjectHideFlags: 0
@@ -941,7 +927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1299752113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,8 +942,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _simulationGameObjects:
   - {fileID: 603764643}
-  - {fileID: 425844571}
   - {fileID: 1205662228}
+  _simulationLoopSubsteps: 1
+  _collisionHandler: {fileID: 2046839124}
+  _handleCollisions: 1
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0
@@ -970,7 +958,8 @@ Transform:
   m_LocalPosition: {x: -0.041556727, y: -0.044513747, z: -1.4398007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2046839125}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1382680487 stripped
@@ -1056,6 +1045,51 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2046839123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2046839125}
+  - component: {fileID: 2046839124}
+  m_Layer: 0
+  m_Name: Collision Handler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2046839124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046839123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 598917f30cca4a44d87452cbf6daccfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particleRadius: 0.01
+--- !u!4 &2046839125
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046839123}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.041556727, y: 0.044513747, z: 1.4398007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1299752114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

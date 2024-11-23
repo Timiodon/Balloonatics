@@ -31,6 +31,7 @@ public interface ISimulationObject
     Particle[] Particles { get; }
     List<IConstraints> Constraints { get; }
     bool UseGravity { get; }
+    bool HandleSelfCollision { get; }
 
     // Initialize positions, velocities, masses, etc.
     void Initialize();
@@ -41,6 +42,10 @@ public interface ISimulationObject
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
+            // A particle with infinite mass would require an infinite force to be moved. 
+            if (Particles[i].W == 0.0f)
+                continue;
+
             if (UseGravity)
                 Particles[i].V.y += GRAVITY * deltaT;
 
@@ -72,6 +77,9 @@ public interface ISimulationObject
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
+            if (Particles[i].W == 0.0f)
+                continue;
+
             Particles[i].V = (Particles[i].X - Particles[i].P) / deltaT;
         }
     }

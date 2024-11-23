@@ -9,6 +9,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public Particle[] Particles { get; set; }
     public List<IConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
+    public bool HandleSelfCollision { get => _handleSelfCollision; }
 
     private Mesh _mesh;
 
@@ -18,6 +19,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useGravity = true;
 
+    [SerializeField]
+    private bool _handleSelfCollision = true;
 
     [Header("Constraint stiffnesses")]
     [SerializeField]

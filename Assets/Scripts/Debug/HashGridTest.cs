@@ -9,8 +9,6 @@ public class HashGridTest : MonoBehaviour
     private Vector3 _queryPosition;
     [SerializeField] 
     private float _queryRadius;
-    [SerializeField]
-    private bool _showQueryResult = false;
 
     private Particle[] _particles;
     private SpatialHashGrid _spatialHashGrid;
