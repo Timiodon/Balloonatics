@@ -81,18 +81,22 @@ public class CollisionHandler : MonoBehaviour
     {
         if (HandleCols)
         {
-            // Handle inter-object collisions here
-
+            HandleInterObjectCollisions(deltaT);
 
             for(int i = 0; i < Objects.Length; i++)
             {
                 if (Objects[i].HandleSelfCollision)
-                    HandleSelfCollision(i, deltaT);
+                    HandleSelfCollisions(i, deltaT);
             }
         }
     }
 
-    private void HandleSelfCollision(int objIdx, float deltaT)
+    private void HandleSelfCollisions(int objIdx, float deltaT)
+    {
+
+    }
+
+    private void HandleInterObjectCollisions(float deltaT)
     {
 
     }

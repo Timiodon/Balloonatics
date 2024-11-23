@@ -37,18 +37,18 @@ public class Solver : MonoBehaviour
     {
         float deltaT = Time.fixedDeltaTime;
         float scaledDeltaT = deltaT / _simulationLoopSubsteps;
-        float maxVelocity = 0.2f * _collisionHandler.ParticleRadius / scaledDeltaT;
+        float maxSpeed = 0.2f * _collisionHandler.ParticleRadius / scaledDeltaT;
 
         _collisionHandler.HandleCols = _handleCollisions;
         // If we query the grids directly after creating them with 2 times the max travelling distance in the whole FixedUpdate loop
         // we get all possible collision candidates but do not have to do this expensive call in the substep loop
-        _collisionHandler.CreateGrids(2f * maxVelocity * deltaT);
+        _collisionHandler.CreateGrids(2f * maxSpeed * deltaT);
         
         for (int i = 0; i < _simulationLoopSubsteps; i++)
         {
             foreach (ISimulationObject simulationObject in _simulationObjects)
             {
-                simulationObject.Precompute(scaledDeltaT);
+                simulationObject.Precompute(scaledDeltaT, maxSpeed);
             }
 
             foreach (ISimulationObject simulationObject in _simulationObjects)

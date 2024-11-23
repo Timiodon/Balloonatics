@@ -37,7 +37,7 @@ public interface ISimulationObject
     void Initialize();
 
     // Initial guess for next position and velocity
-    void Precompute(float deltaT)
+    void Precompute(float deltaT, float maxSpeed)
     {
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
@@ -48,6 +48,10 @@ public interface ISimulationObject
 
             if (UseGravity)
                 Particles[i].V.y += GRAVITY * deltaT;
+
+            // This ensures that we do not miss any collisions
+            if (Particles[i].V.magnitude > maxSpeed)
+                Particles[i].V *= maxSpeed / Particles[i].V.magnitude;
 
             Particles[i].P = Particles[i].X;
             Particles[i].X += Particles[i].V * deltaT;

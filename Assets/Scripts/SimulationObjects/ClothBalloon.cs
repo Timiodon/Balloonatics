@@ -19,6 +19,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useGravity = true;
 
+    // Do not change this at runtime
     [SerializeField]
     private bool _handleSelfCollision = true;
 
