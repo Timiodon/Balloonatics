@@ -15,7 +15,7 @@ public class HashGridTest : MonoBehaviour
     private Particle[] _particles;
     private SpatialHashGrid _spatialHashGrid;
     private float _particleRadius = 0.05f;
-    private GameObject[] _createdInstances;
+    private List<GameObject> _createdInstances;
 
     void Start()
     {
@@ -50,26 +50,34 @@ public class HashGridTest : MonoBehaviour
 
         _spatialHashGrid = new(2 * _particleRadius, _particles.Length);
         _spatialHashGrid.Create(_particles);
-        _createdInstances = new GameObject[_particles.Length];
+        _createdInstances = new();
     }
 
     void Update()
     {
-        if (_showQueryResult)
+        if (Input.GetMouseButtonDown(0))
         {
-            foreach (var obj in _createdInstances)
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
             {
-                Destroy(obj);
+                Debug.DrawRay(hit.point, -ray.direction, Color.red, 10.0f);
+                _queryPosition = hit.point;
+
+                foreach (var obj in _createdInstances)
+                {
+                    Destroy(obj);
+                }
+
+                var neighbours = _spatialHashGrid.Query(_queryPosition, _queryRadius);
+
+                foreach (var index in neighbours)
+                {
+                    _createdInstances.Add(Instantiate(_queryPrefab, _particles[index].X, Quaternion.identity));
+                }
             }
-
-            var neighbours = _spatialHashGrid.Query(_queryPosition, _queryRadius);
-
-            foreach (var index in neighbours)
-            {
-                Instantiate(_queryPrefab, _particles[index].X, Quaternion.identity);
-            }
-
-            _showQueryResult = false;
         }
+
     }
 }
