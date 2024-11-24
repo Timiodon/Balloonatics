@@ -74,6 +74,7 @@ public class CollisionHandler : MonoBehaviour
                 _allParticles.AddRange(Objects[pair.Key].Particles);
             }
 
+            // TODO: this is fucking slow, maybe because of ToArray();
             //var allParticlesArr = _allParticles.ToArray();
             //_globalGrid.Create(allParticlesArr);
             //_globalGrid.QueryAll(allParticlesArr, maxTravelDist);

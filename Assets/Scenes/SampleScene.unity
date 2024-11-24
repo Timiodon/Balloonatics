@@ -933,7 +933,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &1205662230
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1055,7 +1055,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _simulationGameObjects:
   - {fileID: 603764643}
-  _simulationLoopSubsteps: 10
+  - {fileID: 1205662228}
+  _simulationLoopSubsteps: 15
   _collisionHandler: {fileID: 2046839124}
   _handleCollisions: 1
 --- !u!4 &1299752114
