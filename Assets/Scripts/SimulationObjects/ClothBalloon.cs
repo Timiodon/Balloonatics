@@ -166,12 +166,13 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             if (UseGravity)
                 Particles[i].V.y += ISimulationObject.GRAVITY * deltaT;
 
-            Particles[i].P = Particles[i].X;
-            Particles[i].X += Particles[i].V * deltaT;
-
             // This ensures that we do not miss any collisions
             if (Particles[i].V.magnitude > maxSpeed)
                 Particles[i].V *= maxSpeed / Particles[i].V.magnitude;
+
+
+            Particles[i].P = Particles[i].X;
+            Particles[i].X += Particles[i].V * deltaT;
 
             // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
             // This causes the particles to "stick" to the ground somewhat
