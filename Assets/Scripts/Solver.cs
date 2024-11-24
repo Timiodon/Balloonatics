@@ -64,6 +64,11 @@ public class Solver : MonoBehaviour
                 simulationObject.CorrectVelocities(scaledDeltaT);
             }
         }
+
+        foreach(ISimulationObject simulationObject in _simulationObjects)
+        {
+            simulationObject.UpdateMesh();
+        }
     }
 
     void Update()

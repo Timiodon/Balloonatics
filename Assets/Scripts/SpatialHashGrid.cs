@@ -150,6 +150,7 @@ public class SpatialHashGrid
                     continue;
 
                 AdjIDs.Add(neighbourIdx);
+                num++;
             }
         }
 

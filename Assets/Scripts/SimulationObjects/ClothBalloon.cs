@@ -151,7 +151,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new List<IConstraints> { _stretchingConstraints, /*_overpressureConstraints, _bendingConstraints */};
+        Constraints = new List<IConstraints> { _stretchingConstraints, /*_overpressureConstraints,*/ _bendingConstraints };
     }
 
     void Update()
@@ -192,8 +192,10 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         // Use mouse wheel to adjust mouse distance
         _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
+    }
 
-        // TODO: maybe extract the remaining part to a updateMesh method that is called by the Solver()...
+    public void UpdateMesh()
+    {
         for (int i = 0; i < displacedVertices.Length; i++)
         {
             // TODO: we may want to interpolate between timesteps here

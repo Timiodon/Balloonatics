@@ -62,10 +62,12 @@ public interface ISimulationObject
             if (Particles[i].X.y < 0)
             {
                 Particles[i].X = Particles[i].P;
-                Particles[i].X.y = 0.1f;
+                Particles[i].X.y = 0.0f;
             }
         }
     }
+
+    void UpdateMesh();
 
     // Correct initial position guesses to satisfy constraints
     void SolveConstraints(float deltaT)

@@ -49,7 +49,7 @@ public class CollisionHandler : MonoBehaviour
                 Vector3[] tmp = new Vector3[obj.Particles.Length];
                 for (int j = 0; j < tmp.Length; j++)
                 {
-                    tmp[i] = obj.Particles[j].X;
+                    tmp[j] = obj.Particles[j].X;
                 }
                 _originalPositions[i] = tmp;
             }
@@ -112,10 +112,10 @@ public class CollisionHandler : MonoBehaviour
             for (int j = first; j < last; j++)
             {
                 int neighbourID = grid.AdjIDs[j];
-                if (obj.Particles[j].W == 0.0f)
+                if (obj.Particles[neighbourID].W == 0.0f)
                     continue;
 
-                // handle potential duplicates or case i = j
+                // handle potential duplicates or case i = neighbourID
                 Vector3 collisionDir = obj.Particles[neighbourID].X - obj.Particles[i].X;
                 float dist2 = collisionDir.sqrMagnitude;
                 float dist = collisionDir.magnitude;
