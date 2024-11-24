@@ -23,6 +23,9 @@ public class SpatialHashGrid
     // list containing indices of all objects in the grid. The indices of objects that fall into the same table entry are adjacent in this list
     private int[] _gridEntries;
 
+    // Caches the result of Query
+    public HashSet<int> Neighbours;
+
     // The following two fields cache the results of a QueryAll call
     // ParticleIdx => AdjIDsIdx
     public int[] FirstAdjID;
@@ -35,7 +38,9 @@ public class SpatialHashGrid
         _tableSize = 2 * maxNumObjects;
         _table = new int[_tableSize + 1];
         _gridEntries = new int[maxNumObjects];
+        Neighbours = new();
         FirstAdjID = new int[maxNumObjects + 1];
+        AdjIDs = new();
     }
 
     public static int Hash(int3 gridPos, int tableSize)
@@ -89,7 +94,7 @@ public class SpatialHashGrid
     /// <param name="pos"></param>
     /// <param name="maxDistance"></param>
     /// <returns></returns>
-    public List<int> Query(Vector3 pos, float maxDistance)
+    public void Query(Vector3 pos, float maxDistance)
     {
         Vector3 maxDistVector = new(maxDistance, maxDistance, maxDistance);
         int3 minPos = GridPosition(pos - maxDistVector, _cellSize);
@@ -99,7 +104,7 @@ public class SpatialHashGrid
         //int n = (tmp.x + 1) * (tmp.y + 1) * (tmp.z + 1);
         //Debug.Log("number of queried cells: " + n + "\n");
 
-        List<int> neighbours = new();
+        Neighbours.Clear();
         for (int xi = minPos.x; xi <= maxPos.x; xi++)
         {
             for (int yi = minPos.y; yi <= maxPos.y; yi++)
@@ -111,12 +116,10 @@ public class SpatialHashGrid
                     int end = _table[tableIndex + 1];
 
                     for (int i = start; i < end; i++)
-                        neighbours.Add(_gridEntries[i]);
+                        Neighbours.Add(_gridEntries[i]);
                 }
             }
         }
-
-        return neighbours;
     }
 
     /// <summary>
@@ -128,7 +131,7 @@ public class SpatialHashGrid
     /// <param name="maxDist"></param>
     public void QueryAll(Particle[] particles, float maxDistance)
     {
-        AdjIDs = new();
+        AdjIDs.Clear();
 
         float maxDist2 = maxDistance * maxDistance;
         int num = 0;
@@ -136,9 +139,9 @@ public class SpatialHashGrid
         for (int i = 0; i < particles.Length; i++)
         {
             FirstAdjID[i] = num;
-            var neighbours = Query(particles[i].X, maxDistance);
+            Query(particles[i].X, maxDistance);
 
-            foreach (int neighbourIdx in neighbours)
+            foreach (int neighbourIdx in Neighbours)
             {
                 // Don't count myself or particles with a higher ID (To avoid duplicate collision handling) as a neighbour
                 if (neighbourIdx >= i)

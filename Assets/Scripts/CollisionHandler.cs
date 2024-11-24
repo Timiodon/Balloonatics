@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class CollisionHandler : MonoBehaviour
@@ -12,6 +13,7 @@ public class CollisionHandler : MonoBehaviour
     // Grid used for collision handling between different objects
     private SpatialHashGrid _globalGrid;
     private int _totalNumberOfParticles = 0;
+    private List<Particle> _allParticles;
     // allParticlesIndex => (ObjectsIndex, ObjectParticlesIndex)
     private Dictionary<int, (int, int)> _globalToLocalIndex;
 
@@ -27,7 +29,7 @@ public class CollisionHandler : MonoBehaviour
     {
         if (Objects == null)
         {
-            Debug.LogError("Objects array is not set.");
+            UnityEngine.Debug.LogError("Objects array is not set.");
             return;
         }
 
@@ -56,6 +58,7 @@ public class CollisionHandler : MonoBehaviour
         }
 
         _globalGrid = new(2 * _particleRadius, _totalNumberOfParticles);
+        _allParticles = new(_totalNumberOfParticles);
     }
 
 
@@ -63,17 +66,17 @@ public class CollisionHandler : MonoBehaviour
     {
         if (HandleCols)
         {
-            List<Particle> allParticles = new();
+            _allParticles.Clear();
             foreach(KeyValuePair<int, SpatialHashGrid> pair in _selfCollisionGrids)
             {
                 pair.Value.Create(Objects[pair.Key].Particles);
                 pair.Value.QueryAll(Objects[pair.Key].Particles, maxTravelDist);
-                allParticles.AddRange(Objects[pair.Key].Particles);
+                _allParticles.AddRange(Objects[pair.Key].Particles);
             }
 
-            var allParticlesArr = allParticles.ToArray();
-            _globalGrid.Create(allParticlesArr);
-            _globalGrid.QueryAll(allParticlesArr, maxTravelDist);
+            //var allParticlesArr = _allParticles.ToArray();
+            //_globalGrid.Create(allParticlesArr);
+            //_globalGrid.QueryAll(allParticlesArr, maxTravelDist);
         }
     }
 

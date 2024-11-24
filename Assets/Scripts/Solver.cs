@@ -46,7 +46,7 @@ public class Solver : MonoBehaviour
         _collisionHandler.CreateGrids(2f * maxSpeed * deltaT);
         
         for (int i = 0; i < _simulationLoopSubsteps; i++)
-        {
+        {   
             foreach (ISimulationObject simulationObject in _simulationObjects)
             {
                 simulationObject.Precompute(scaledDeltaT, maxSpeed);

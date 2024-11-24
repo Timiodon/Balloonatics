@@ -151,7 +151,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new List<IConstraints> { _stretchingConstraints, /*_overpressureConstraints,*/ _bendingConstraints };
+        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
     }
 
     void Update()
