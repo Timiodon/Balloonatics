@@ -154,16 +154,24 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
     }
 
-    public void Precompute(float deltaT)
+    public void Precompute(float deltaT, float maxSpeed)
     {
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
+            // A particle with infinite mass would require an infinite force to be moved. 
+            if (Particles[i].W == 0.0f)
+                continue;
+
             if (UseGravity)
                 Particles[i].V.y += ISimulationObject.GRAVITY * deltaT;
 
             Particles[i].P = Particles[i].X;
             Particles[i].X += Particles[i].V * deltaT;
+
+            // This ensures that we do not miss any collisions
+            if (Particles[i].V.magnitude > maxSpeed)
+                Particles[i].V *= maxSpeed / Particles[i].V.magnitude;
 
             // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
             // This causes the particles to "stick" to the ground somewhat
@@ -189,48 +197,11 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         // TODO: parallelize this
         for (int i = 0; i < Particles.Length; i++)
         {
+            if (Particles[i].W == 0.0f)
+                continue;
+
             Particles[i].V = (Particles[i].X - Particles[i].P) / deltaT;
         }
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            // Add constraints to follow the mouse
-            _mouseFollowConstraints.ClearConstraints();
-
-            int closestVertex = Utils.FindClosestVertex(ray, Particles);
-            if (closestVertex != -1)
-            {
-                _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
-                _mouseDistance = Vector3.Distance(Particles[closestVertex].X, ray.origin);
-
-                for (int i = 0; i < _mesh.vertices.Length; i++)
-                {
-                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1f);
-                }
-
-                Constraints.Add(_mouseFollowConstraints);
-            }
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (Constraints.Contains(_mouseFollowConstraints))
-            {
-                Constraints.Remove(_mouseFollowConstraints);
-            }
-        }
-        if (Input.GetMouseButton(0))
-        {
-            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            _mouseFollowConstraints.mousePos = mouseRay.origin + mouseRay.direction * _mouseDistance;
-        }
-
-        // Use mouse wheel to adjust mouse distance
-        _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
     }
 
     public void UpdateMesh()
@@ -298,6 +269,46 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
 
         return neighbours;
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            // Add constraints to follow the mouse
+            _mouseFollowConstraints.ClearConstraints();
+
+            int closestVertex = Utils.FindClosestVertex(ray, Particles);
+            if (closestVertex != -1)
+            {
+                _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
+                _mouseDistance = Vector3.Distance(Particles[closestVertex].X, ray.origin);
+
+                for (int i = 0; i < _mesh.vertices.Length; i++)
+                {
+                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1f);
+                }
+
+                Constraints.Add(_mouseFollowConstraints);
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (Constraints.Contains(_mouseFollowConstraints))
+            {
+                Constraints.Remove(_mouseFollowConstraints);
+            }
+        }
+        if (Input.GetMouseButton(0))
+        {
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            _mouseFollowConstraints.mousePos = mouseRay.origin + mouseRay.direction * _mouseDistance;
+        }
+
+        // Use mouse wheel to adjust mouse distance
+        _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
     }
 
 }

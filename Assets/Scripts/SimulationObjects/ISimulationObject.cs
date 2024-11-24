@@ -37,7 +37,7 @@ public interface ISimulationObject
     void Initialize();
 
     // Initial guess for next position and velocity
-    void Precompute(float deltaT);
+    void Precompute(float deltaT, float maxSpeed);
 
     void UpdateMesh();
 

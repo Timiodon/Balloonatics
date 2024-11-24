@@ -10,6 +10,8 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public Particle[] Particles { get; set; }
     public List<IRigidConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
+    public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public float Friction { get => _friction; }
 
     [SerializeField]
     private float _totalMass = 1f;
@@ -19,6 +21,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private Vector3 _externalTorque = Vector3.zero;
+    // Do not change this at runtime
+    [SerializeField]
+    private bool _handleSelfCollision = false;
+
+    [SerializeField]
+    private float _friction = 0.0f;
 
     public enum Shape
     {
@@ -84,7 +92,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
 
     // Initial guess for next position and velocity
-    public void Precompute(float deltaT)
+    public void Precompute(float deltaT, float maxSpeed)
     {
         if (_useGravity)
             Particles[0].V.y += ISimulationObject.GRAVITY * deltaT;
@@ -154,6 +162,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         }
     }
 
+    public void UpdateMesh()
+    {
+        transform.position = Particles[0].X;
+        transform.rotation = q;
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -185,9 +199,6 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
         // Use mouse wheel to adjust mouse distance
         _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
-
-        transform.position = Particles[0].X;
-        transform.rotation = q;
 
         // Test saving grabbed point
         //Debug.DrawLine(Particles[0].X, LocalToWorld(r2), Color.red);
