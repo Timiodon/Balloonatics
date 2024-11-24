@@ -9,6 +9,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public Particle[] Particles { get; set; }
     public List<IClothConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
+    public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public float Friction { get => _friction; }
 
     private Mesh _mesh;
 
@@ -18,6 +20,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useGravity = true;
 
+    // Do not change this at runtime
+    [SerializeField]
+    private bool _handleSelfCollision = true;
+
+    [SerializeField]
+    private float _friction = 0.0f;
 
     [Header("Constraint stiffnesses")]
     [SerializeField]
@@ -39,7 +47,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _bendingComplianceScale = 1f;
 
-    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    [SerializeField, Range(30f * MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _pressure = 1f;
 
     private Vector3[] displacedVertices;
@@ -223,7 +231,10 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         // Use mouse wheel to adjust mouse distance
         _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
+    }
 
+    public void UpdateMesh()
+    {
         for (int i = 0; i < displacedVertices.Length; i++)
         {
             // TODO: we may want to interpolate between timesteps here

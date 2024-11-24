@@ -30,12 +30,16 @@ public interface ISimulationObject
 
     Particle[] Particles { get; }
     bool UseGravity { get; }
+    bool HandleSelfCollision { get; }
+    float Friction { get; }
 
     // Initialize positions, velocities, masses, etc.
     void Initialize();
 
     // Initial guess for next position and velocity
     void Precompute(float deltaT);
+
+    void UpdateMesh();
 
     // Correct initial position guesses to satisfy constraints
     void SolveConstraints(float deltaT);

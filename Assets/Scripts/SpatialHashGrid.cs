@@ -23,12 +23,24 @@ public class SpatialHashGrid
     // list containing indices of all objects in the grid. The indices of objects that fall into the same table entry are adjacent in this list
     private int[] _gridEntries;
 
+    // Caches the result of Query
+    public HashSet<int> Neighbours;
+
+    // The following two fields cache the results of a QueryAll call
+    // ParticleIdx => AdjIDsIdx
+    public int[] FirstAdjID;
+    // Saves the indices of neighbouring particles
+    public List<int> AdjIDs;
+
     public SpatialHashGrid(float cellSize, int maxNumObjects)
     {
         _cellSize = cellSize;
         _tableSize = 2 * maxNumObjects;
         _table = new int[_tableSize + 1];
-        _gridEntries = new int[maxNumObjects]; 
+        _gridEntries = new int[maxNumObjects];
+        Neighbours = new();
+        FirstAdjID = new int[maxNumObjects + 1];
+        AdjIDs = new();
     }
 
     public static int Hash(int3 gridPos, int tableSize)
@@ -76,34 +88,75 @@ public class SpatialHashGrid
     }
 
     /// <summary>
-    /// Returns the particle indices of the Particles closer than maxDistance to pos
+    /// Returns the particle indices of the Particles closer than maxDistance to pos. The returned list 
+    /// may contain duplicates as well as false positives.
     /// </summary>
     /// <param name="pos"></param>
     /// <param name="maxDistance"></param>
     /// <returns></returns>
-    public List<int> Query(Vector3 pos, float maxDistance)
+    public void Query(Vector3 pos, float maxDistance)
     {
         Vector3 maxDistVector = new(maxDistance, maxDistance, maxDistance);
         int3 minPos = GridPosition(pos - maxDistVector, _cellSize);
         int3 maxPos = GridPosition(pos + maxDistVector, _cellSize);
 
-        List<int> neighbours = new();
+        //int3 tmp = maxPos - minPos;
+        //int n = (tmp.x + 1) * (tmp.y + 1) * (tmp.z + 1);
+        //Debug.Log("number of queried cells: " + n + "\n");
+
+        Neighbours.Clear();
         for (int xi = minPos.x; xi <= maxPos.x; xi++)
         {
             for (int yi = minPos.y; yi <= maxPos.y; yi++)
             {
                 for (int zi = minPos.z; zi <= maxPos.z; zi++)
                 {
-                    int tableIndex = Hash(GridPosition(new(xi, yi, zi), _cellSize), _tableSize);
+                    int tableIndex = Hash(new(xi, yi, zi), _tableSize);
                     int start = _table[tableIndex];
                     int end = _table[tableIndex + 1];
 
-                    for (int i = start; i <= end; i++)
-                        neighbours.Add(_gridEntries[i]);
+                    for (int i = start; i < end; i++)
+                        Neighbours.Add(_gridEntries[i]);
                 }
             }
         }
+    }
 
-        return neighbours;
+    /// <summary>
+    /// For each Particle i, finds all neighbouring Particles j with j < i and caches the results. 
+    /// Note that this method removes false positives but duplicates may still be present in the neighbour list for a given particle. 
+    /// The results can be accessed via FirstAdjID and AdjIDs
+    /// </summary>
+    /// <param name="particles"></param>
+    /// <param name="maxDist"></param>
+    public void QueryAll(Particle[] particles, float maxDistance)
+    {
+        AdjIDs.Clear();
+
+        float maxDist2 = maxDistance * maxDistance;
+        int num = 0;
+
+        for (int i = 0; i < particles.Length; i++)
+        {
+            FirstAdjID[i] = num;
+            Query(particles[i].X, maxDistance);
+
+            foreach (int neighbourIdx in Neighbours)
+            {
+                // Don't count myself or particles with a higher ID (To avoid duplicate collision handling) as a neighbour
+                if (neighbourIdx >= i)
+                    continue;
+
+                // Eliminate false positives
+                float dist2 = (particles[i].X - particles[neighbourIdx].X).sqrMagnitude;
+                if (dist2 > maxDist2)
+                    continue;
+
+                AdjIDs.Add(neighbourIdx);
+                num++;
+            }
+        }
+
+        FirstAdjID[particles.Length] = num;
     }
 }
