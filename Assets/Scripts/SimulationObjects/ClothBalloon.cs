@@ -10,6 +10,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public List<IConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public float Friction { get => _friction; }
 
     private Mesh _mesh;
 
@@ -22,6 +23,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     // Do not change this at runtime
     [SerializeField]
     private bool _handleSelfCollision = true;
+
+    [SerializeField]
+    private float _friction = 0.0f;
 
     [Header("Constraint stiffnesses")]
     [SerializeField]
@@ -147,7 +151,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+        Constraints = new List<IConstraints> { _stretchingConstraints, /*_overpressureConstraints, _bendingConstraints */};
     }
 
     void Update()
@@ -189,6 +193,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         // Use mouse wheel to adjust mouse distance
         _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
 
+        // TODO: maybe extract the remaining part to a updateMesh method that is called by the Solver()...
         for (int i = 0; i < displacedVertices.Length; i++)
         {
             // TODO: we may want to interpolate between timesteps here

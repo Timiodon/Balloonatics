@@ -25,13 +25,13 @@ public class Solver : MonoBehaviour
             .Select(go => go.GetComponent<ISimulationObject>())
             .ToArray();
 
-        _collisionHandler.Objects = _simulationObjects;
-        _collisionHandler.Initialize();
-
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.Initialize();
         }
+
+        _collisionHandler.Objects = _simulationObjects;
+        _collisionHandler.Initialize();
     }
 
     void FixedUpdate()

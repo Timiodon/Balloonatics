@@ -149,7 +149,7 @@ public class SpatialHashGrid
                 if (dist2 > maxDist2)
                     continue;
 
-                AdjIDs[num++] = neighbourIdx;
+                AdjIDs.Add(neighbourIdx);
             }
         }
 

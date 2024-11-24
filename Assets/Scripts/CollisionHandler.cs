@@ -86,14 +86,67 @@ public class CollisionHandler : MonoBehaviour
             for(int i = 0; i < Objects.Length; i++)
             {
                 if (Objects[i].HandleSelfCollision)
-                    HandleSelfCollisions(i, deltaT);
+                    HandleSelfCollisions(i);
             }
         }
     }
 
-    private void HandleSelfCollisions(int objIdx, float deltaT)
+    private void HandleSelfCollisions(int objIdx)
     {
+        float minDistance2 = (2 * _particleRadius) * (2 * _particleRadius);
+        var obj = Objects[objIdx];
+        var grid = _selfCollisionGrids[objIdx];
+        var originalPos = _originalPositions[objIdx];
 
+        for (int i = 0; i < obj.Particles.Length; i++)
+        {
+            // Actually, if only one particle has infinite mass, we should still move the other one.
+            // However, Mathias does not do this and it might be an unlikely case anyway, because
+            // only external points to the soft body will probably be fixed
+            if (obj.Particles[i].W == 0.0f)
+                continue;
+
+            int first = grid.FirstAdjID[i];
+            int last = grid.FirstAdjID[i + 1];
+
+            for (int j = first; j < last; j++)
+            {
+                int neighbourID = grid.AdjIDs[j];
+                if (obj.Particles[j].W == 0.0f)
+                    continue;
+
+                // handle potential duplicates or case i = j
+                Vector3 collisionDir = obj.Particles[neighbourID].X - obj.Particles[i].X;
+                float dist2 = collisionDir.sqrMagnitude;
+                float dist = collisionDir.magnitude;
+                if (dist2 > minDistance2 || dist2 == 0.0f)
+                    continue;
+
+                // To avoid jittering, we cannot enforce minDistance2 if the particles are closer than that in the original 
+                // undeformed state
+                float restDist2 = (originalPos[i] - originalPos[neighbourID]).sqrMagnitude;
+                float restDist = (originalPos[i] - originalPos[neighbourID]).magnitude;
+                float minDist = 2 * _particleRadius;
+                if (dist2 > restDist2)
+                    continue;
+                if (restDist2 < minDistance2)
+                    minDist = restDist;
+
+                // position correction
+                float corrScale = 0.5f * (minDist - dist) / dist;
+                obj.Particles[i].X -= corrScale * collisionDir;
+                obj.Particles[neighbourID].X += corrScale * collisionDir;
+
+                // If there is friction, make position correction more realistic by having the two particles move
+                // away again at a more similar veloctiy. Note that the timestep cancels out in those equations
+                Vector3 velI = obj.Particles[i].X - obj.Particles[i].P;
+                Vector3 velNeighbour = obj.Particles[neighbourID].X - obj.Particles[neighbourID].P;
+                Vector3 avgVel = 0.5f * (velI + velNeighbour);
+
+                obj.Particles[i].X += obj.Friction * velI;
+                obj.Particles[neighbourID].X += obj.Friction * velNeighbour;
+            }
+        }
     }
 
     private void HandleInterObjectCollisions(float deltaT)

@@ -32,6 +32,7 @@ public interface ISimulationObject
     List<IConstraints> Constraints { get; }
     bool UseGravity { get; }
     bool HandleSelfCollision { get; }
+    float Friction { get; }
 
     // Initialize positions, velocities, masses, etc.
     void Initialize();
@@ -61,7 +62,7 @@ public interface ISimulationObject
             if (Particles[i].X.y < 0)
             {
                 Particles[i].X = Particles[i].P;
-                Particles[i].X.y = 0;
+                Particles[i].X.y = 0.1f;
             }
         }
     }
