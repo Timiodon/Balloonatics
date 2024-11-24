@@ -18,7 +18,7 @@ public struct BendingConstraint
     public float Compliance;
 }
 
-public class BendingConstraints : IConstraints
+public class BendingConstraints : IClothConstraints
 {
     private List<BendingConstraint> _constraints = new();
     public float ComplianceScale = 1f;

@@ -18,7 +18,7 @@ public struct StretchingConstraint
     public float Compliance;
 }
 
-public class StretchingConstraints : IConstraints
+public class StretchingConstraints : IClothConstraints
 {
     private List<StretchingConstraint> _constraints = new();
     public float ComplianceScale = 1f;

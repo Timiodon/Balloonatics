@@ -18,7 +18,7 @@ public struct MouseFollowConstraint
     public float Compliance;
 }
 
-public class MouseFollowConstraints : IConstraints
+public class MouseFollowConstraints : IClothConstraints
 {
     public Vector3 mousePos;
 

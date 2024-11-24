@@ -7,7 +7,7 @@ using UnityEngine;
 public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
-    public List<IConstraints> Constraints { get; private set; }
+    public List<IClothConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
 
     private Mesh _mesh;
@@ -143,7 +143,46 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new List<IConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+    }
+
+    public void Precompute(float deltaT)
+    {
+        // TODO: parallelize this
+        for (int i = 0; i < Particles.Length; i++)
+        {
+            if (UseGravity)
+                Particles[i].V.y += ISimulationObject.GRAVITY * deltaT;
+
+            Particles[i].P = Particles[i].X;
+            Particles[i].X += Particles[i].V * deltaT;
+
+            // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
+            // This causes the particles to "stick" to the ground somewhat
+            if (Particles[i].X.y < 0)
+            {
+                Particles[i].X = Particles[i].P;
+                Particles[i].X.y = 0;
+            }
+        }
+    }
+
+    // Correct initial position guesses to satisfy constraints
+    public void SolveConstraints(float deltaT)
+    {
+        foreach (IClothConstraints constraint in Constraints)
+        {
+            constraint.SolveConstraints(Particles, deltaT);
+        }
+    }
+
+    public void CorrectVelocities(float deltaT)
+    {
+        // TODO: parallelize this
+        for (int i = 0; i < Particles.Length; i++)
+        {
+            Particles[i].V = (Particles[i].X - Particles[i].P) / deltaT;
+        }
     }
 
     void Update()
@@ -249,4 +288,5 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         return neighbours;
     }
+
 }

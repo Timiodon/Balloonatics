@@ -3,7 +3,7 @@ using System.Data;
 using UnityEngine;
 
 
-public class OverpressureConstraints : IConstraints
+public class OverpressureConstraints : IClothConstraints
 {
     public Dictionary<int, int[]> TriangleToParticleIndices;
     public float Pressure = 1f;

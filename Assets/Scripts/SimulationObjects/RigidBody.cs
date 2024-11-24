@@ -8,7 +8,7 @@ using UnityEngine;
 public class RigidBody : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
-    public List<IConstraints> Constraints { get; private set; }
+    public List<IRigidConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
 
     [SerializeField]
@@ -27,27 +27,21 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Cylinder
     }
 
+    public Quaternion q = Quaternion.identity; // Current orientation of the rigidbody
+    public Matrix4x4 InvI0; // Inverse of the initial moment of inertia (note that we use a 4x4 matrix since Unity doesn't have 3x3 matrices)
+
     [SerializeField]
     private Shape _shape = Shape.Cube;
-
-    private Quaternion _q = Quaternion.identity; // Current orientation of the rigidbody
     private Quaternion _qPrev; // Previous orientation of the rigidbody
-    private Matrix4x4 _invI0; // Inverse of the initial moment of inertia (note that we use a 4x4 matrix since Unity doesn't have 3x3 matrices)
     private Vector3 _w; // Angular velocity, in radians per second
 
-    // Temporary fields for custom mouse follow constraint
-    private Vector3 r2;
-    private Vector3 mousePos;
-    private float mouseDistance;
-    private float l0;
-    private float mouseMass = 1;
-    [SerializeField]
-    private float mouseCompliance = 1f;
-    private bool solveMouseFollow = false;
+    private float _mouseDistance;
+
+    private RigidMouseFollowConstraints _mouseFollowConstraints;
 
     public void Initialize()
     {
-        Constraints = new List<IConstraints>();
+        Constraints = new List<IRigidConstraints>();
 
         Particles = new Particle[1];
         Particles[0] = new Particle(transform.position, Vector3.zero, _totalMass);
@@ -79,15 +73,18 @@ public class RigidBody : MonoBehaviour, ISimulationObject
                 Izz = Ixx;
                 break;
         }
-        _invI0 = Matrix4x4.Scale(new Vector3(1 / Ixx, 1 / Iyy, 1 / Izz));
+        InvI0 = Matrix4x4.Scale(new Vector3(1 / Ixx, 1 / Iyy, 1 / Izz));
 
         // Print _invIO for debugging
         //Debug.Log("_invIO: " + _invI0);
+
+        _mouseFollowConstraints = new RigidMouseFollowConstraints();
+        _mouseFollowConstraints.AddConstraint(this, 1f);
     }
 
 
     // Initial guess for next position and velocity
-    void ISimulationObject.Precompute(float deltaT)
+    public void Precompute(float deltaT)
     {
         if (_useGravity)
             Particles[0].V.y += ISimulationObject.GRAVITY * deltaT;
@@ -96,12 +93,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].X += Particles[0].V * deltaT;
 
         // Integrate angular velocity and orientation
-        _qPrev = _q;
-        _w += deltaT * _invI0.MultiplyVector(_externalTorque);
+        _qPrev = q;
+        _w += deltaT * InvI0.MultiplyVector(_externalTorque);
 
         Quaternion dq = Quaternion.Euler(_w * Mathf.Rad2Deg * 0.5f * deltaT);
-        _q = dq * _q;
-        _q.Normalize(); // Avoid drift
+        q = dq * q;
+        q.Normalize(); // Avoid drift
 
         /*
         // Matthias Mueller version, which is a bit unclear to me
@@ -123,12 +120,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     }
 
     // Correct velocity to match corrected positions, needs to additionally update angular velocity
-    void ISimulationObject.CorrectVelocities(float deltaT)
+    public void CorrectVelocities(float deltaT)
     {
         Particles[0].V = (Particles[0].X - Particles[0].P) / deltaT;
 
         // Update angular velocity
-        Quaternion dq = _q * Quaternion.Inverse(_qPrev);
+        Quaternion dq = q * Quaternion.Inverse(_qPrev);
         _w = 2 * dq.eulerAngles * Mathf.Deg2Rad / deltaT;
 
         // Prevent incorrect flips (done by Matthias Mueller, but not sure how well this actually works; seems to cause some constant
@@ -139,54 +136,22 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         //}
     }
 
-    private Vector3 WorldToLocal(Vector3 worldPos)
+    public Vector3 WorldToLocal(Vector3 worldPos)
     {
-        return Quaternion.Inverse(_q) * (worldPos - Particles[0].X); // maybe precompute inverse quaternion
+        return Quaternion.Inverse(q) * (worldPos - Particles[0].X); // maybe precompute inverse quaternion
     }
 
-    private Vector3 LocalToWorld(Vector3 localPos)
+    public Vector3 LocalToWorld(Vector3 localPos)
     {
-        return Particles[0].X + _q * localPos;
+        return Particles[0].X + q * localPos;
     }
 
-    public void SolveRigidBodyConstraints(float deltaT)
+    public void SolveConstraints(float deltaT)
     {
-        // Only solve mouse follow while holding down mouse button
-        if (solveMouseFollow)
+        foreach (IRigidConstraints constraint in Constraints)
         {
-            // a1 is mousePos, a2 is r2 in world space
-            Vector3 a1 = mousePos;
-            Vector3 r1 = WorldToLocal(a1);
-            Vector3 a2 = LocalToWorld(r2);
-            Vector3 n = (a2 - a1).normalized;
-            float C = Vector3.Distance(a2, mousePos) - l0;
-
-            // Compute generalized inverse masses
-            float w1 = 1 / mouseMass + Vector3.Dot(Vector3.Cross(r1, n), _invI0.MultiplyVector(Vector3.Cross(r1, n)));
-            float w2 = 1 / mouseMass + Vector3.Dot(Vector3.Cross(r2, n), _invI0.MultiplyVector(Vector3.Cross(r2, n)));
-
-            // Compute lagrange multiplier
-            float lambda = -C / (w1 + w2 + mouseCompliance / (deltaT * deltaT));
-
-            // Update states
-            Particles[0].X += w2 * lambda * n;
-            Vector3 w = 0.5f * lambda * _invI0.MultiplyVector(Vector3.Cross(r2, n));
-            Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * _q;
-            _q.x = _q.x + dq.x;
-            _q.y = _q.y + dq.y;
-            _q.z = _q.z + dq.z;
-            _q.w = _q.w + dq.w;
-            _q.Normalize();
-
-            // Visualize mouse follow constraint
-            Debug.DrawLine(a1, a2, Color.red);
+            constraint.SolveConstraints(Particles, deltaT);
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (solveMouseFollow)
-            Gizmos.DrawSphere(mousePos, 0.05f);
     }
 
     void Update()
@@ -198,34 +163,42 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
             if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
             {
-                r2 = WorldToLocal(hit.point);
-                mousePos = hit.point;
-                mouseDistance = hit.distance;
+                Constraints.Add(_mouseFollowConstraints);
 
-                l0 = 0f; // the way this is set up, rest length is always 0
-                solveMouseFollow = true;
+                _mouseFollowConstraints.r2 = WorldToLocal(hit.point);
+                _mouseFollowConstraints.mousePos = hit.point;
+                _mouseDistance = hit.distance;
             }
         }
         if (Input.GetMouseButton(0))
         {
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            mousePos = mouseRay.origin + mouseRay.direction * mouseDistance;
+            _mouseFollowConstraints.mousePos = mouseRay.origin + mouseRay.direction * _mouseDistance;
         }
         if (Input.GetMouseButtonUp(0))
         {
-            solveMouseFollow = false;
+            if (Constraints.Contains(_mouseFollowConstraints))
+            {
+                Constraints.Remove(_mouseFollowConstraints);
+            }
         }
 
         // Use mouse wheel to adjust mouse distance
-        mouseDistance += Input.mouseScrollDelta.y * 0.1f;
+        _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
 
         transform.position = Particles[0].X;
-        transform.rotation = _q;
+        transform.rotation = q;
 
         // Test saving grabbed point
         //Debug.DrawLine(Particles[0].X, LocalToWorld(r2), Color.red);
 
         // Visualize rotation axis
         Debug.DrawRay(Particles[0].X, _w.normalized, Color.cyan);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (Constraints != null && (Constraints.Contains(_mouseFollowConstraints)))
+            Gizmos.DrawSphere(_mouseFollowConstraints.mousePos, 0.05f);
     }
 }
