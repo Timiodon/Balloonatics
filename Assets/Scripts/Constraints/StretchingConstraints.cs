@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using System.Linq;
 
 public struct StretchingConstraint
 {
@@ -16,12 +17,21 @@ public struct StretchingConstraint
     public (int, int) Indices;
     public (float, float) InvMasses;
     public float Compliance;
+
+    public bool ContainsEdge((int, int) edge)
+    {
+        return System.Math.Min(Indices.Item1, Indices.Item2) == System.Math.Min(edge.Item1, edge.Item2)
+            && System.Math.Max(Indices.Item1, Indices.Item2) == System.Math.Max(edge.Item1, edge.Item2);
+    }
 }
+
 
 public class StretchingConstraints : IClothConstraints
 {
     private List<StretchingConstraint> _constraints = new();
     public float ComplianceScale = 1f;
+
+    public System.Action<List<(int, int)>> tearEdgesCallback;
 
     public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
@@ -52,6 +62,8 @@ public class StretchingConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+        List<(int, int)> tornEdges = null;
+
         foreach (var constraint in _constraints)
         {
             var (idx1, idx2) = constraint.Indices;
@@ -63,12 +75,33 @@ public class StretchingConstraints : IClothConstraints
             if (C != 0)
             {
                 var lambda = -C / (w1 + w2 + alpha);
+                
                 Vector3 grad1 = (xNew[idx1].X - xNew[idx2].X).normalized;
 
                 xNew[idx1].X += lambda * w1 * grad1;
                 xNew[idx2].X += lambda * w1 * -grad1;
+
+                float forceNorm = Mathf.Abs(C * constraint.Compliance * ComplianceScale);
+
+                if (forceNorm > 0.05)
+                {
+                    if (tornEdges is null)
+                        tornEdges = new();
+
+                    tornEdges.Add((constraint.Indices.Item1, constraint.Indices.Item2));
+                }
             }
         }
+
+        if (tornEdges is not null)
+        {
+            tearEdgesCallback(tornEdges);
+        }
+    }
+
+    public void RemoveEdgeConstraints(List<(int, int)> edges)
+    {
+        _constraints.RemoveAll(constraint => edges.Any(edge => constraint.ContainsEdge(edge)));
     }
 
     public void ClearConstraints()

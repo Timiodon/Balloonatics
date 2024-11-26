@@ -4,4 +4,5 @@ public interface IClothConstraints
 {
     bool AddConstraint(Particle[] particles, List<int> indices, float stiffness);
     void SolveConstraints(Particle[] xNew, float deltaT);
+    void RemoveEdgeConstraints(List<(int, int)> edges);
 }

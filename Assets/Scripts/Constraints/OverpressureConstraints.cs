@@ -12,6 +12,8 @@ public class OverpressureConstraints : IClothConstraints
     private float _compliance;
     private float _V0 = 0f; // Initial volume
 
+    private bool _popped = false;
+
     private float ComputeVolume(Particle[] particles)
     {
         float volume = 0f;
@@ -51,6 +53,9 @@ public class OverpressureConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+        if (_popped)
+            return;
+
         float V = ComputeVolume(xNew);
         float C = V - Pressure * _V0;
 
@@ -88,4 +93,10 @@ public class OverpressureConstraints : IClothConstraints
             }
         }
     }
+
+    public void RemoveEdgeConstraints(List<(int, int)> edges)
+    {
+		// I'm not sure what to do with the pressure after the balloon popped.
+		//_popped = true;
+	}
 }

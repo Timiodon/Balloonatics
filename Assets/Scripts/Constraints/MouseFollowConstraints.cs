@@ -73,4 +73,9 @@ public class MouseFollowConstraints : IClothConstraints
     {
         _constraints.Clear();
     }
+
+    public void RemoveEdgeConstraints(List<(int, int)> edges)
+    {
+        // I don't think we need to do anything here.
+    }
 }

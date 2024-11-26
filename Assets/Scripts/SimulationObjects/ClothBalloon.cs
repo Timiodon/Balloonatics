@@ -14,6 +14,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     private Mesh _mesh;
 
+    // The edges that need to be removed from the mesh this step because they have been torn apart.
+    private HashSet<(int, int)> _tornEdges = new();
+
     [SerializeField]
     private float _totalMass = 1f;
 
@@ -59,7 +62,6 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private StretchingConstraints _stretchingConstraints;
     private MouseFollowConstraints _mouseFollowConstraints;
     private BendingConstraints _bendingConstraints;
-
 
     public void Initialize()
     {
@@ -110,6 +112,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         {
             _stretchingConstraints.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stretchingStiffness);
         }
+        _stretchingConstraints.tearEdgesCallback = TearEdges;
 
         // Initialize overpressure constraint
         _overpressureConstraints = new OverpressureConstraints();
@@ -222,6 +225,16 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _mesh.vertices = displacedVertices;
         _mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
+    }
+
+    void TearEdges(List<(int, int)> edges)
+    {
+        _tornEdges.UnionWith(edges);
+
+        foreach (IClothConstraints constraint in Constraints)
+        {
+            constraint.RemoveEdgeConstraints(edges);
+        }
     }
 
     // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208

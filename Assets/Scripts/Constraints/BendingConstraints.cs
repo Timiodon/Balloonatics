@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 
 public struct BendingConstraint
 {
@@ -16,6 +16,21 @@ public struct BendingConstraint
     public (int, int, int, int) Indices;
     public (float, float, float, float) InvMasses;
     public float Compliance;
+
+    private bool EdgeEquals((int, int) edge1, (int, int) edge2)
+    {
+        return System.Math.Min(edge1.Item1, edge1.Item2) == System.Math.Min(edge2.Item1, edge2.Item2)
+            && System.Math.Max(edge1.Item1, edge1.Item2) == System.Math.Max(edge2.Item1, edge2.Item2);
+    }
+
+    public bool ContainsEdge((int, int) edge)
+    {
+        return EdgeEquals(edge, (Indices.Item3, Indices.Item4))
+            || EdgeEquals(edge, (Indices.Item1, Indices.Item3))
+            || EdgeEquals(edge, (Indices.Item1, Indices.Item4))
+            || EdgeEquals(edge, (Indices.Item2, Indices.Item3))
+            || EdgeEquals(edge, (Indices.Item2, Indices.Item4));
+    }
 }
 
 public class BendingConstraints : IClothConstraints
@@ -124,5 +139,10 @@ public class BendingConstraints : IClothConstraints
             xNew[idx2].X += lambda * w2 * u2;
             xNew[idx3].X += lambda * w3 * u3;
         }
+    }
+
+    public void RemoveEdgeConstraints(List<(int, int)> edges)
+    {
+        _constraints.RemoveAll(constraint => edges.Any(edge => constraint.ContainsEdge(edge)));
     }
 }
