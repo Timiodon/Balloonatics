@@ -97,6 +97,6 @@ public class OverpressureConstraints : IClothConstraints
     public void RemoveEdgeConstraints(List<(int, int)> edges)
     {
 		// I'm not sure what to do with the pressure after the balloon popped.
-		//_popped = true;
+		_popped = true;
 	}
 }

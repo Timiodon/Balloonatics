@@ -595,7 +595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _handleSelfCollision: 1
+  _handleSelfCollision: 0
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
@@ -1016,7 +1016,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _handleSelfCollision: 1
+  _handleSelfCollision: 0
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 1
@@ -1056,9 +1056,9 @@ MonoBehaviour:
   _simulationGameObjects:
   - {fileID: 603764643}
   - {fileID: 1205662228}
-  _simulationLoopSubsteps: 15
+  _simulationLoopSubsteps: 2
   _collisionHandler: {fileID: 2046839124}
-  _handleCollisions: 1
+  _handleCollisions: 0
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0

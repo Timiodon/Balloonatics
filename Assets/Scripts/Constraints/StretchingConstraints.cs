@@ -78,9 +78,6 @@ public class StretchingConstraints : IClothConstraints
                 
                 Vector3 grad1 = (xNew[idx1].X - xNew[idx2].X).normalized;
 
-                xNew[idx1].X += lambda * w1 * grad1;
-                xNew[idx2].X += lambda * w1 * -grad1;
-
                 float forceNorm = Mathf.Abs(C * constraint.Compliance * ComplianceScale);
 
                 if (forceNorm > 0.05)
@@ -88,7 +85,12 @@ public class StretchingConstraints : IClothConstraints
                     if (tornEdges is null)
                         tornEdges = new();
 
-                    tornEdges.Add((constraint.Indices.Item1, constraint.Indices.Item2));
+                    tornEdges.Add((Mathf.Min(constraint.Indices.Item1, constraint.Indices.Item2), Mathf.Max(constraint.Indices.Item1, constraint.Indices.Item2)));
+                }
+                else
+                {
+                    xNew[idx1].X += lambda * w1 * grad1;
+                    xNew[idx2].X += lambda * w1 * -grad1;
                 }
             }
         }

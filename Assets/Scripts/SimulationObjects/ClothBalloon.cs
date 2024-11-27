@@ -170,7 +170,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
                 Particles[i].V.y += ISimulationObject.GRAVITY * deltaT;
 
             // This ensures that we do not miss any collisions
-            if (Particles[i].V.magnitude > maxSpeed)
+            if (HandleSelfCollision && Particles[i].V.magnitude > maxSpeed)
                 Particles[i].V *= maxSpeed / Particles[i].V.magnitude;
 
 
@@ -223,6 +223,28 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _overpressureConstraints.Pressure = _pressure;
 
         _mesh.vertices = displacedVertices;
+
+        if (_tornEdges.Count > 0)
+        {
+            var removeMask = new System.Collections.BitArray(_mesh.triangles.Length);
+            for (int i = 0; i < _mesh.triangles.Length; i += 3)
+            {
+                int a = vertexIdToParticleIdMap[_mesh.triangles[i]];
+                int b = vertexIdToParticleIdMap[_mesh.triangles[i + 1]];
+                int c = vertexIdToParticleIdMap[_mesh.triangles[i + 2]];
+                if (_tornEdges.Contains((Mathf.Min(a, b), Mathf.Max(a, b)))
+                    || _tornEdges.Contains((Mathf.Min(b, c), Mathf.Max(b, c)))
+                    || _tornEdges.Contains((Mathf.Min(a, c), Mathf.Max(a, c))))
+                {
+                    removeMask.Set(i, true);
+                    removeMask.Set(i + 1, true);
+                    removeMask.Set(i + 2, true);
+                }
+            }
+            _mesh.triangles = _mesh.triangles.Where((_, index) => !removeMask.Get(index)).ToArray();
+            _tornEdges.Clear();
+        }
+
         _mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
     }
