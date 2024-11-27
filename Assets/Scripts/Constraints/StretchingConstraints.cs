@@ -60,6 +60,12 @@ public class StretchingConstraints : IClothConstraints
         return true;
     }
 
+    public void ShuffleConstraintOrder()
+    {
+        // Shuffling the constrains helps mitigate the rotation bias when inflated
+        _constraints = _constraints.OrderBy(_ => Random.Range(0f, 1f)).ToList();
+    }
+
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
         List<(int, int)> tornEdges = null;

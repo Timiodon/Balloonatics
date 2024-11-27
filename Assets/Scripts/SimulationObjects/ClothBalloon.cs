@@ -112,6 +112,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         {
             _stretchingConstraints.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stretchingStiffness);
         }
+        _stretchingConstraints.ShuffleConstraintOrder();
         _stretchingConstraints.tearEdgesCallback = TearEdges;
 
         // Initialize overpressure constraint
