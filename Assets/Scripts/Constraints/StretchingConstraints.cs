@@ -30,6 +30,7 @@ public class StretchingConstraints : IClothConstraints
 {
     private List<StretchingConstraint> _constraints = new();
     public float ComplianceScale = 1f;
+    public float TearingThreshold = 0.05f;
 
     public System.Action<List<(int, int)>> tearEdgesCallback;
 
@@ -86,7 +87,7 @@ public class StretchingConstraints : IClothConstraints
 
                 float forceNorm = Mathf.Abs(C * constraint.Compliance * ComplianceScale);
 
-                if (forceNorm > 0.05)
+                if (forceNorm > TearingThreshold)
                 {
                     if (tornEdges is null)
                         tornEdges = new();

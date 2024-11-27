@@ -40,6 +40,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private float _bendingStiffness = 0.5f;
 
+    [SerializeField]
+    private float _tearingThreshold = 0.05f;
+
     private const float MIN_COMPLIANCE_SCALE = 0.01f;
     private const float MAX_COMPLIANCE_SCALE = 200f;
 
@@ -220,6 +223,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         }
 
         _stretchingConstraints.ComplianceScale = _stretchingComplianceScale;
+        _stretchingConstraints.TearingThreshold = _tearingThreshold;
         _bendingConstraints.ComplianceScale = _bendingComplianceScale;
         _overpressureConstraints.Pressure = _pressure;
 
