@@ -41,8 +41,9 @@ public class RigidMouseFollowConstraints : IRigidConstraints
         float C = Vector3.Distance(a2, mousePos) - _restLength;
 
         // Compute generalized inverse masses
-        float w1 = _invMouseMass + Vector3.Dot(Vector3.Cross(r1, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r1, n)));
-        float w2 = _invMouseMass + Vector3.Dot(Vector3.Cross(r2, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r2, n)));
+        // TODO: fix this to use the actual mass of the rigid body
+        float w1 = _invMouseMass; // + Vector3.Dot(Vector3.Cross(r1, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r1, n)));
+        float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(r2, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r2, n)));
 
         // Compute lagrange multiplier
         float lambda = -C / (w1 + w2 + _compliance / (deltaT * deltaT));

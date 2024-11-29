@@ -46,6 +46,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     private float _mouseDistance;
 
     private RigidMouseFollowConstraints _mouseFollowConstraints;
+    private RigidGroundCollisionConstraints _groundCollisionConstraints;
 
     public void Initialize()
     {
@@ -88,6 +89,13 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
         _mouseFollowConstraints = new RigidMouseFollowConstraints();
         _mouseFollowConstraints.AddConstraint(this, 1f);
+
+        // Add a ground collision constraint for every vertex of the rigidbody
+        _groundCollisionConstraints = new RigidGroundCollisionConstraints();
+        foreach (Vector3 vertex in GetComponent<MeshFilter>().sharedMesh.vertices)
+        {
+            _groundCollisionConstraints.AddConstraint(this, vertex);
+        }
     }
 
 
@@ -117,14 +125,6 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         _q.w = _q.w + dq.w;
         _q.Normalize();
         */
-
-        // Temporary ground collision inspired by 10 min physics. We might want to replace this with a constraint later
-        // TODO: should be handled differently for rigidbodies as they only have a single particle
-        if (Particles[0].X.y < 0)
-        {
-            Particles[0].X = Particles[0].P;
-            Particles[0].X.y = 0;
-        }
     }
 
     // Correct velocity to match corrected positions, needs to additionally update angular velocity
