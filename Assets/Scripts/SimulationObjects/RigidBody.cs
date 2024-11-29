@@ -5,6 +5,7 @@ using UnityEngine;
 // - 22 - How to write a rigid body simulator: https://www.youtube.com/watch?v=euypZDssYxE
 // - Deriving 3D Rigid Body Physics and implementing it in C/C++ (with intuitions): https://www.youtube.com/watch?v=4r_EvmPKOvY
 [RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(Collider))]
 public class RigidBody : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
@@ -51,6 +52,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public void Initialize()
     {
         Constraints = new List<IRigidConstraints>();
+        q = transform.rotation;
 
         Particles = new Particle[1];
         Particles[0] = new Particle(transform.position, Vector3.zero, _totalMass);
@@ -96,6 +98,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         {
             _groundCollisionConstraints.AddConstraint(this, vertex);
         }
+        Constraints.Add(_groundCollisionConstraints);
     }
 
 
@@ -118,12 +121,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
         /*
         // Matthias Mueller version, which is a bit unclear to me
-        Quaternion dq = Quaternion.Euler(_w * Mathf.Rad2Deg * 0.5f * deltaT) * _q;
-        _q.x = _q.x + dq.x;
-        _q.y = _q.y + dq.y;
-        _q.z = _q.z + dq.z;
-        _q.w = _q.w + dq.w;
-        _q.Normalize();
+        Quaternion dq = Quaternion.Euler(_w * Mathf.Rad2Deg * 0.5f * deltaT) * q;
+        q.x = q.x + dq.x;
+        q.y = q.y + dq.y;
+        q.z = q.z + dq.z;
+        q.w = q.w + dq.w;
+        q.Normalize();
         */
     }
 
