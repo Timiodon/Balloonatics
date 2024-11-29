@@ -43,8 +43,7 @@ public class RigidGroundCollisionConstraints : IRigidConstraints
             if (d > 0f) {
                 // Apply delta x = d*n    
                 // Compute generalized inverse masses
-                // TODO: what should InvI0 be for the ground?
-                float w1 = _invGroundMass; // + Vector3.Dot(Vector3.Cross(r1, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r1, n)));
+                float w1 = 0; // ground has infinite mass and cannot be rotated
                 float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(r2, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r2, n)));
 
                 // Compute lagrange multiplier

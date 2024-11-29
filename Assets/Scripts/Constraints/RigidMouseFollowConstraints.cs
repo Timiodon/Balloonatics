@@ -7,7 +7,6 @@ public class RigidMouseFollowConstraints : IRigidConstraints
     public Vector3 r2;
 
     private RigidBody _rb;
-    private float _invMouseMass = 1f;
     private float _restLength = 0f; // the way this is set up, rest length is always 0
     private float _compliance;
 
@@ -42,7 +41,7 @@ public class RigidMouseFollowConstraints : IRigidConstraints
 
         // Compute generalized inverse masses
         // TODO: fix this to use the actual mass of the rigid body
-        float w1 = _invMouseMass; // + Vector3.Dot(Vector3.Cross(r1, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r1, n)));
+        float w1 = 0; // ground has infinite mass and cannot be rotated
         float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(r2, n), _rb.InvI0.MultiplyVector(Vector3.Cross(r2, n)));
 
         // Compute lagrange multiplier
