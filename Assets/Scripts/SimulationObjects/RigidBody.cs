@@ -49,7 +49,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     private RigidMouseFollowConstraints _mouseFollowConstraints;
     private RigidGroundCollisionConstraints _groundCollisionConstraints;
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         Constraints = new List<IRigidConstraints>();
         q = transform.rotation;
@@ -171,7 +171,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         transform.rotation = q;
     }
 
-    void Update()
+    protected virtual void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {

@@ -3,17 +3,16 @@ using UnityEngine;
 
 public struct ClothToRigidStretchingConstraint
 {
-    public ClothToRigidStretchingConstraint(Vector3 rbLocalPos, int sbParticleIndex, Particle sbParticle, float restLength)
+    public ClothToRigidStretchingConstraint(Vector3 rbLocalPos, int sbParticleIndex, float restLength)
     {
-        this.rbLocalPos = rbLocalPos;
-        this.RestLength = restLength;
-        this.sbParticleIndex = sbParticleIndex;
+        RbLocalPos = rbLocalPos;
+        RestLength = restLength;
+        SbParticleIndex = sbParticleIndex;
     }
 
-    public Vector3 rbLocalPos;
+    public Vector3 RbLocalPos;
     public float RestLength;
-    public int sbParticleIndex;
-    public float Compliance;
+    public int SbParticleIndex;
 }
 
 // Only for a single body
@@ -24,7 +23,7 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
     // solve constraints only allows supplying one particles array, so we need to save a reference
     // to the other
     private Particle[] _sbParticles;
-    private float _compliance = 0f; // infinite stiffness for all collision constraints
+    private float _compliance = 0f; // infinite stiffness for all constraints
 
     public bool AddConstraint(RigidBody rb, float stiffness)
     {
@@ -47,7 +46,7 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
         _rb = rb;
         _sbParticles = sbParticles;
         float restLength = Vector3.Distance(rb.LocalToWorld(rbLocalPos), sbParticles[sbParticleIndex].X);
-        _constraints.Add(new ClothToRigidStretchingConstraint(rbLocalPos, sbParticleIndex, sbParticles[sbParticleIndex], restLength));
+        _constraints.Add(new ClothToRigidStretchingConstraint(rbLocalPos, sbParticleIndex, restLength));
 
         return true;
     }
@@ -57,22 +56,22 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
         foreach (ClothToRigidStretchingConstraint constraint in _constraints)
         {
             // 1 for softbody, 2 for rigidbody
-            Vector3 a2 = _rb.LocalToWorld(constraint.rbLocalPos);
-            Vector3 a1 = _sbParticles[constraint.sbParticleIndex].X;
+            Vector3 a2 = _rb.LocalToWorld(constraint.RbLocalPos);
+            Vector3 a1 = _sbParticles[constraint.SbParticleIndex].X;
             Vector3 n = (a2 - a1).normalized;
-            float C = Vector3.Distance(a2, a1) - _restLength;
-   
+            float C = Vector3.Distance(a2, a1) - constraint.RestLength;
+
             // Compute generalized inverse masses
-            float w1 = _sbParticles[constraints.sbParticleIndex].W; // no invIO contribution
-            float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(constraint.rbLocalPos, n), _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.rbLocalPos, n)));
+            float w1 = _sbParticles[constraint.SbParticleIndex].W; // no invIO contribution
+            float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(constraint.RbLocalPos, n), _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.RbLocalPos, n)));
 
             // Compute lagrange multiplier
             float lambda = -C / (w1 + w2 + _compliance / (deltaT * deltaT));
 
             // Update states
-            _sbParticles[constraint.sbParticleIndex].X += w1 * lambda * -n; // TODO: maybe use n instead?
+            _sbParticles[constraint.SbParticleIndex].X += w1 * lambda * -n; // TODO: maybe use n instead?
             xNew[0].X += w2 * lambda * n;
-            Vector3 w = 0.5f * lambda * _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.rbLocalPos, n));
+            Vector3 w = 0.5f * lambda * _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.RbLocalPos, n));
             Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * _rb.q;
             _rb.q.x = _rb.q.x + dq.x;
             _rb.q.y = _rb.q.y + dq.y;

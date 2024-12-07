@@ -17,7 +17,7 @@ public class Solver : MonoBehaviour
     private CollisionHandler _collisionHandler;
     [SerializeField]
     private bool _handleCollisions = true;
-    
+
 
     void Start()
     {
@@ -27,8 +27,21 @@ public class Solver : MonoBehaviour
 
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
-            simulationObject.Initialize();
+            if (simulationObject.GetType() != typeof(BalloonHouse))
+            {
+                simulationObject.Initialize();
+            }
         }
+
+        // Initialize the balloon house(s) last
+        foreach (ISimulationObject simulationObject in _simulationObjects)
+        {
+            if (simulationObject.GetType() == typeof(BalloonHouse))
+            {
+                simulationObject.Initialize();
+            }
+        }
+
 
         _collisionHandler.Objects = _simulationObjects;
         _collisionHandler.Initialize();
@@ -44,9 +57,9 @@ public class Solver : MonoBehaviour
         // If we query the grids directly after creating them with 2 times the max travelling distance in the whole FixedUpdate loop
         // we get all possible collision candidates but do not have to do this expensive call in the substep loop
         _collisionHandler.CreateGrids(2f * maxSpeed * deltaT);
-        
+
         for (int i = 0; i < _simulationLoopSubsteps; i++)
-        {   
+        {
             foreach (ISimulationObject simulationObject in _simulationObjects)
             {
                 simulationObject.Precompute(scaledDeltaT, maxSpeed);
@@ -65,7 +78,7 @@ public class Solver : MonoBehaviour
             }
         }
 
-        foreach(ISimulationObject simulationObject in _simulationObjects)
+        foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             simulationObject.UpdateMesh();
         }
