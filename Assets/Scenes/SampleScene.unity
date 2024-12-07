@@ -206,8 +206,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.11576173, y: 0.8319233, z: -0.189365, w: -0.50857025}
-  m_LocalPosition: {x: 2.5864754, y: 2.2635043, z: 1.3125305}
+  m_LocalRotation: {x: 0.0757005, y: -0.8444566, z: 0.12401376, w: 0.51554155}
+  m_LocalPosition: {x: 8.585816, y: 5.2178173, z: 7.037867}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -606,7 +606,7 @@ MonoBehaviour:
   _tearingThreshold: 0.01
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1
+  _pressure: 1.25
 --- !u!1 &743934075
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,8 +1210,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c48f0d8e8ed4d694098f5105f53c8893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _totalMass: 1
-  _useGravity: 0
+  _totalMass: 0.1
+  _useGravity: 1
   _externalTorque: {x: 0, y: 0, z: 0}
   _handleSelfCollision: 0
   _friction: 0

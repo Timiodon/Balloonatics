@@ -10,7 +10,7 @@ public class BalloonHouse : RigidBody
 
     private ClothToRigidStretchingConstraints _clothToRigidStretchingConstraints;
 
-    private Dictionary<ClothBalloon, int> _attachementParticleIndex;
+    private int[] _attachementParticleIndex;
     private Vector3 _rbLocalPos;
 
     public override void Initialize()
@@ -19,27 +19,29 @@ public class BalloonHouse : RigidBody
 
         _clothToRigidStretchingConstraints = new ClothToRigidStretchingConstraints();
 
-        _attachementParticleIndex = new Dictionary<ClothBalloon, int>();
+        _attachementParticleIndex = new int[_balloons.Count];
         // Attach the balloons to the house
         for (int i = 0; i < _balloons.Count; i++)
         {
             // Find particle that has the lowest Y value
             Particle lowestParticle = _balloons[i].Particles[0];
+            int lowestParticleIndex = 0;
             for (int j = 1; j < _balloons[i].Particles.Length; j++)
             {
                 if (_balloons[i].Particles[j].X.y < lowestParticle.X.y)
                 {
                     lowestParticle = _balloons[i].Particles[j];
+                    lowestParticleIndex = j;
                 }
             }
-            _attachementParticleIndex.Add(_balloons[i], Array.IndexOf(_balloons[i].Particles, lowestParticle));
+            _attachementParticleIndex[i] = lowestParticleIndex;
 
             // Use the sharedMesh bounds to retrieve the max Y value of the house
             Vector3 size = GetComponent<MeshFilter>().sharedMesh.bounds.size;
             _rbLocalPos = new Vector3(0, size.y / 2, 0);
 
             // Just randomly pick a particle of the balloon for now
-            _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, 0, _rbLocalPos);
+            _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPos);
         }
 
         Constraints.Add(_clothToRigidStretchingConstraints);
@@ -49,9 +51,9 @@ public class BalloonHouse : RigidBody
     {
         base.Update();
 
-        foreach (ClothBalloon balloon in _balloons)
+        for (int i = 0; i < _balloons.Count; i++)
         {
-            Debug.DrawLine(balloon.Particles[_attachementParticleIndex[balloon]].X, LocalToWorld(_rbLocalPos), Color.white);
+            Debug.DrawLine(_balloons[i].Particles[_attachementParticleIndex[i]].X, LocalToWorld(_rbLocalPos), Color.white);
         }
     }
 }
