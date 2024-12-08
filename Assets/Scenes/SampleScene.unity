@@ -1255,6 +1255,7 @@ MonoBehaviour:
   _shape: 0
   _balloons:
   - {fileID: 603764648}
+  _ropeMaterial: {fileID: 2100000, guid: 52713ec3bb431a347a29322be60e04ef, type: 2}
 --- !u!1 &1635160623
 GameObject:
   m_ObjectHideFlags: 0
