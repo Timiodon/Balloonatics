@@ -36,8 +36,21 @@ public class Solver : MonoBehaviour
 
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
-            simulationObject.Initialize();
+            if (simulationObject.GetType() != typeof(BalloonHouse))
+            {
+                simulationObject.Initialize();
+            }
         }
+
+        // Initialize the balloon house(s) last
+        foreach (ISimulationObject simulationObject in _simulationObjects)
+        {
+            if (simulationObject.GetType() == typeof(BalloonHouse))
+            {
+                simulationObject.Initialize();
+            }
+        }
+
 
         _collisionHandler.Objects = _simulationObjects;
         _collisionHandler.Initialize();
@@ -57,8 +70,9 @@ public class Solver : MonoBehaviour
         createGridMarker.End();
 
         subStepMarker.Begin();
+
         for (int i = 0; i < _simulationLoopSubsteps; i++)
-        {   
+        {
             foreach (ISimulationObject simulationObject in _simulationObjects)
             {
                 precomputeMarker.Begin();
@@ -86,7 +100,7 @@ public class Solver : MonoBehaviour
         }
         subStepMarker.End();
 
-        foreach(ISimulationObject simulationObject in _simulationObjects)
+        foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             updateMeshMarker.Begin();
             simulationObject.UpdateMesh();
