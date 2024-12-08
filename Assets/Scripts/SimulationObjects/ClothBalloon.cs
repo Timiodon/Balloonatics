@@ -259,7 +259,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             _tornEdges.Clear();
         }
 
-        _mesh.RecalculateNormals();
+        NormalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
+        //_mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
     }
 
