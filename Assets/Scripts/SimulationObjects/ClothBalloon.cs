@@ -263,11 +263,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     void TearEdges(List<(int, int)> edges)
     {
         _tornEdges.UnionWith(edges);
+        _handleSelfCollision = false;
 
         foreach (IClothConstraints constraint in Constraints)
         {
             constraint.RemoveEdgeConstraints(edges);
-        }
+        }      
     }
 
     // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
