@@ -12,6 +12,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public List<IRigidConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
 
     [SerializeField]
@@ -25,6 +26,8 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     // Do not change this at runtime
     [SerializeField]
     private bool _handleSelfCollision = false;
+
+    private float _hashcellSize = 0.01f;
 
     [SerializeField]
     private float _friction = 0.0f;

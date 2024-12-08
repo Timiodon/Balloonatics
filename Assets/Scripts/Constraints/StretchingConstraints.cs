@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 using System.Linq;
-
+using Unity.Profiling;
 public struct StretchingConstraint
 {
     public StretchingConstraint(Particle p1, Particle p2, int idx1, int idx2, float stiffness)
@@ -33,6 +33,8 @@ public class StretchingConstraints : IClothConstraints
     public float TearingThreshold = 0.05f;
 
     public System.Action<List<(int, int)>> tearEdgesCallback;
+
+    static readonly ProfilerMarker solveMarker = new ProfilerMarker("Solve Stretching Constraint");
 
     public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
@@ -71,6 +73,7 @@ public class StretchingConstraints : IClothConstraints
     {
         List<(int, int)> tornEdges = null;
 
+        solveMarker.Begin();
         foreach (var constraint in _constraints)
         {
             var (idx1, idx2) = constraint.Indices;
@@ -87,7 +90,7 @@ public class StretchingConstraints : IClothConstraints
 
                 float forceNorm = Mathf.Abs(C * constraint.Compliance * ComplianceScale);
 
-                if (forceNorm > TearingThreshold)
+                if (false/*forceNorm > TearingThreshold*/)
                 {
                     if (tornEdges is null)
                         tornEdges = new();
@@ -106,6 +109,7 @@ public class StretchingConstraints : IClothConstraints
         {
             tearEdgesCallback(tornEdges);
         }
+        solveMarker.End();
     }
 
     public void RemoveEdgeConstraints(List<(int, int)> edges)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using Unity.Profiling;
 
 
 public class OverpressureConstraints : IClothConstraints
@@ -13,6 +14,8 @@ public class OverpressureConstraints : IClothConstraints
     private float _V0 = 0f; // Initial volume
 
     private bool _popped = false;
+
+    static readonly ProfilerMarker solveMarker = new ProfilerMarker("Solve Overpressure constraint");
 
     private float ComputeVolume(Particle[] particles)
     {
@@ -56,6 +59,7 @@ public class OverpressureConstraints : IClothConstraints
         if (_popped)
             return;
 
+        solveMarker.Begin();
         float V = ComputeVolume(xNew);
         float C = V - Pressure * _V0;
 
@@ -92,6 +96,7 @@ public class OverpressureConstraints : IClothConstraints
                 }
             }
         }
+        solveMarker.End();
     }
 
     public void RemoveEdgeConstraints(List<(int, int)> edges)

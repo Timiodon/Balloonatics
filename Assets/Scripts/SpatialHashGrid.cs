@@ -6,6 +6,8 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Collections.Generic;
+using Unity.Profiling;
+using UnityEditor;
 
 // Code adapted from https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/15-selfCollision.html
 public class SpatialHashGrid
@@ -24,7 +26,7 @@ public class SpatialHashGrid
     private int[] _gridEntries;
 
     // Caches the result of Query
-    public HashSet<int> Neighbours;
+    public List<int> Neighbours;
 
     // The following two fields cache the results of a QueryAll call
     // ParticleIdx => AdjIDsIdx
@@ -32,13 +34,14 @@ public class SpatialHashGrid
     // Saves the indices of neighbouring particles
     public List<int> AdjIDs;
 
+    static readonly ProfilerMarker queryMarker = new ProfilerMarker("Query Grid");
     public SpatialHashGrid(float cellSize, int maxNumObjects)
     {
         _cellSize = cellSize;
-        _tableSize = 2 * maxNumObjects;
+        _tableSize = 20 * maxNumObjects;
         _table = new int[_tableSize + 1];
         _gridEntries = new int[maxNumObjects];
-        Neighbours = new();
+        Neighbours = new(maxNumObjects);
         FirstAdjID = new int[maxNumObjects + 1];
         AdjIDs = new();
     }
@@ -116,7 +119,9 @@ public class SpatialHashGrid
                     int end = _table[tableIndex + 1];
 
                     for (int i = start; i < end; i++)
+                    {
                         Neighbours.Add(_gridEntries[i]);
+                    }
                 }
             }
         }
@@ -139,10 +144,13 @@ public class SpatialHashGrid
         for (int i = 0; i < particles.Length; i++)
         {
             FirstAdjID[i] = num;
+            queryMarker.Begin();
             Query(particles[i].X, maxDistance);
+            queryMarker.End();
 
-            foreach (int neighbourIdx in Neighbours)
+            for (int j = 0; j < Neighbours.Count; j++)
             {
+                int neighbourIdx = Neighbours[j];
                 // Don't count myself or particles with a higher ID (To avoid duplicate collision handling) as a neighbour
                 if (neighbourIdx >= i)
                     continue;

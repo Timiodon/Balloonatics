@@ -31,6 +31,7 @@ public interface ISimulationObject
     Particle[] Particles { get; }
     bool UseGravity { get; }
     bool HandleSelfCollision { get; }
+    float HashcellSize { get; }
     float Friction { get; }
 
     // Initialize positions, velocities, masses, etc.

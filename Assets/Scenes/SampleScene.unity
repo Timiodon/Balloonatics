@@ -409,11 +409,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: -0.22
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5
+      value: 7.58
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f80866635eeab34e9713dd4d68777d1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -596,7 +596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _handleSelfCollision: 0
+  _handleSelfCollision: 1
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
@@ -863,7 +863,7 @@ MonoBehaviour:
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
   _tearingThreshold: 0.05
-  _stretchingComplianceScale: 0.5
+  _stretchingComplianceScale: 8
   _bendingComplianceScale: 0.5
   _pressure: 1
 --- !u!23 &958369812
@@ -1020,13 +1020,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _handleSelfCollision: 0
+  _handleSelfCollision: 1
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
   _tearingThreshold: 0.05
-  _stretchingComplianceScale: 3
+  _stretchingComplianceScale: 19
   _bendingComplianceScale: 2
   _pressure: 1
 --- !u!1 &1299752112
@@ -1059,12 +1059,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationGameObjects:
-  - {fileID: 1205662228}
   - {fileID: 1468515432}
+  - {fileID: 1205662228}
   - {fileID: 603764643}
-  _simulationLoopSubsteps: 2
+  _simulationLoopSubsteps: 10
   _collisionHandler: {fileID: 2046839124}
-  _handleCollisions: 0
+  _handleCollisions: 1
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0

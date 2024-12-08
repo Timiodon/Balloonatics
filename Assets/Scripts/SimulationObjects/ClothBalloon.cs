@@ -10,6 +10,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public List<IClothConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public float HashcellSize {  get => _hashcellSize; }
     public float Friction { get => _friction; }
 
     private Mesh _mesh;
@@ -22,6 +23,9 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private bool _useGravity = true;
+
+    // calculate cellDistance depending on avg edge length
+    private float _hashcellSize = 0.01f; 
 
     // Do not change this at runtime
     [SerializeField]
@@ -114,9 +118,11 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         foreach ((int, int) edge in edgeSet)
         {
             _stretchingConstraints.AddConstraint(Particles, new List<int> { edge.Item1, edge.Item2 }, _stretchingStiffness);
+            _hashcellSize += (Particles[edge.Item1].X - Particles[edge.Item2].X).sqrMagnitude;
         }
         _stretchingConstraints.ShuffleConstraintOrder();
         _stretchingConstraints.tearEdgesCallback = TearEdges;
+        _hashcellSize = Mathf.Sqrt(_hashcellSize / edgeSet.Count) / 2.0f;
 
         // Initialize overpressure constraint
         _overpressureConstraints = new OverpressureConstraints();
@@ -158,7 +164,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
 
-        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
+        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints/*, _bendingConstraints */};
     }
 
     public void Precompute(float deltaT, float maxSpeed)

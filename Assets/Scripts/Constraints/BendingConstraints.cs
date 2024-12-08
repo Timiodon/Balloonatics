@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.Profiling;
 
 public struct BendingConstraint
 {
@@ -37,6 +38,8 @@ public class BendingConstraints : IClothConstraints
 {
     private List<BendingConstraint> _constraints = new();
     public float ComplianceScale = 1f;
+
+    static readonly ProfilerMarker solveMarker = new ProfilerMarker("Solve Bending Constraint");
 
     public bool AddConstraint(Particle[] particles, List<int> indices, float stiffness)
     {
@@ -76,6 +79,7 @@ public class BendingConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+        solveMarker.Begin();
         foreach (var constraint in _constraints)
         {
             // Code adapted from PBS Ex. 4
@@ -88,7 +92,10 @@ public class BendingConstraints : IClothConstraints
             float elen = e.magnitude;
             // Case triangle is degenerate
             if (elen < 1e-6)
+            {
+                solveMarker.End();
                 return;
+            }
             float invElen = 1.0f / elen;
 
             // Normal computation
@@ -120,7 +127,10 @@ public class BendingConstraints : IClothConstraints
                 alpha;
 
             if (lambda == 0.0)
+            {
+                solveMarker.End();
                 return;
+            }    
 
             // stability
             // 1.5 is the largest magic number I found to be stable in all cases :-)
@@ -129,7 +139,10 @@ public class BendingConstraints : IClothConstraints
 
             lambda = -(phi - constraint.RestAngle) / lambda;
             if (lambda == 0.0)
+            {
+                solveMarker.End();
                 return;
+            }
 
             if (Vector3.Dot(Vector3.Cross(n1, n2), e) > 0.0)
                 lambda = -lambda;
@@ -139,6 +152,7 @@ public class BendingConstraints : IClothConstraints
             xNew[idx2].X += lambda * w2 * u2;
             xNew[idx3].X += lambda * w3 * u3;
         }
+        solveMarker.End();
     }
 
     public void RemoveEdgeConstraints(List<(int, int)> edges)

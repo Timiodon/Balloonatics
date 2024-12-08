@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.Profiling;
 using UnityEngine;
 
 public class CollisionHandler : MonoBehaviour
@@ -25,6 +26,12 @@ public class CollisionHandler : MonoBehaviour
     private Dictionary<int, Vector3[]> _originalPositions;
 
 
+
+    static readonly ProfilerMarker createGridMarker = new ProfilerMarker("Create Grid");
+    static readonly ProfilerMarker queryAllMarker = new ProfilerMarker("QueryAll Grid");
+    static readonly ProfilerMarker selfCollisionsMarker = new ProfilerMarker("Handle Self-Collisions");
+
+
     public void Initialize()
     {
         if (Objects == null)
@@ -47,7 +54,8 @@ public class CollisionHandler : MonoBehaviour
 
             if (obj.HandleSelfCollision)
             {
-                _selfCollisionGrids[i] = new(2 * _particleRadius, obj.Particles.Length);
+                // adapt hashcell size to particle density of resting object
+                _selfCollisionGrids[i] = new(2 * Mathf.Max(_particleRadius, obj.HashcellSize), obj.Particles.Length);
                 Vector3[] tmp = new Vector3[obj.Particles.Length];
                 for (int j = 0; j < tmp.Length; j++)
                 {
@@ -69,8 +77,12 @@ public class CollisionHandler : MonoBehaviour
             _allParticles.Clear();
             foreach(KeyValuePair<int, SpatialHashGrid> pair in _selfCollisionGrids)
             {
+                createGridMarker.Begin();
                 pair.Value.Create(Objects[pair.Key].Particles);
+                createGridMarker.End();
+                queryAllMarker.Begin();
                 pair.Value.QueryAll(Objects[pair.Key].Particles, maxTravelDist);
+                queryAllMarker.End();
                 _allParticles.AddRange(Objects[pair.Key].Particles);
             }
 
@@ -90,7 +102,11 @@ public class CollisionHandler : MonoBehaviour
             for(int i = 0; i < Objects.Length; i++)
             {
                 if (Objects[i].HandleSelfCollision)
+                {
+                    selfCollisionsMarker.Begin();
                     HandleSelfCollisions(i);
+                    selfCollisionsMarker.End();
+                }
             }
         }
     }
@@ -122,21 +138,21 @@ public class CollisionHandler : MonoBehaviour
                 // handle potential duplicates or case i = neighbourID
                 Vector3 collisionDir = obj.Particles[neighbourID].X - obj.Particles[i].X;
                 float dist2 = collisionDir.sqrMagnitude;
-                float dist = collisionDir.magnitude;
                 if (dist2 > minDistance2 || dist2 == 0.0f)
                     continue;
 
                 // To avoid jittering, we cannot enforce minDistance2 if the particles are closer than that in the original 
                 // undeformed state
                 float restDist2 = (originalPos[i] - originalPos[neighbourID]).sqrMagnitude;
-                float restDist = (originalPos[i] - originalPos[neighbourID]).magnitude;
-                float minDist = 2 * _particleRadius;
                 if (dist2 > restDist2)
                     continue;
+                
+                float minDist = 2 * _particleRadius;
                 if (restDist2 < minDistance2)
-                    minDist = restDist;
+                    minDist = (originalPos[i] - originalPos[neighbourID]).magnitude; 
 
                 // position correction
+                float dist = collisionDir.magnitude;
                 float corrScale = 0.5f * (minDist - dist) / dist;
                 obj.Particles[i].X -= corrScale * collisionDir;
                 obj.Particles[neighbourID].X += corrScale * collisionDir;

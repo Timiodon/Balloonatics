@@ -70,9 +70,9 @@ public class HashGridTest : MonoBehaviour
 
                 _spatialHashGrid.Query(_queryPosition, _queryRadius);
 
-                foreach (var index in _spatialHashGrid.Neighbours)
+                for (int i = 0; i < _spatialHashGrid.Neighbours.Count; i++)
                 {
-                    _createdInstances.Add(Instantiate(_queryPrefab, _particles[index].X, Quaternion.identity));
+                    _createdInstances.Add(Instantiate(_queryPrefab, _particles[_spatialHashGrid.Neighbours[i]].X, Quaternion.identity));
                 }
             }
         }
