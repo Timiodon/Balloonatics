@@ -1048,7 +1048,7 @@ MonoBehaviour:
   _stretchingStiffness: 50
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.05
+  _tearingThreshold: 1
   _stretchingComplianceScale: 19
   _bendingComplianceScale: 2
   _pressure: 1
