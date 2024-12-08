@@ -163,8 +163,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
                 }
             }
         }
-
         Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints/*, _bendingConstraints */};
+        Debug.Log(this.gameObject.name + ": " + Particles.Length + " number of Particles \n");
     }
 
     public void Precompute(float deltaT, float maxSpeed)

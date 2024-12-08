@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Profiling;
 using UnityEngine;
 
+/// <summary>
+/// Inspiration for the collision handling comes from https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/15-selfCollision.html
+/// </summary>
 public class CollisionHandler : MonoBehaviour
 {
     [SerializeField]
@@ -14,7 +18,7 @@ public class CollisionHandler : MonoBehaviour
     // Grid used for collision handling between different objects
     private SpatialHashGrid _globalGrid;
     private int _totalNumberOfParticles = 0;
-    private List<Particle> _allParticles;
+    private Particle[] _allParticles;
     // allParticlesIndex => (ObjectsIndex, ObjectParticlesIndex)
     private Dictionary<int, (int, int)> _globalToLocalIndex;
 
@@ -27,9 +31,11 @@ public class CollisionHandler : MonoBehaviour
 
 
 
-    static readonly ProfilerMarker createGridMarker = new ProfilerMarker("Create Grid");
-    static readonly ProfilerMarker queryAllMarker = new ProfilerMarker("QueryAll Grid");
+    static readonly ProfilerMarker createGridMarker = new ProfilerMarker("Create Local Grids");
+    static readonly ProfilerMarker queryAllMarker = new ProfilerMarker("QueryAll Local Grids");
     static readonly ProfilerMarker selfCollisionsMarker = new ProfilerMarker("Handle Self-Collisions");
+    static readonly ProfilerMarker globalCollisionsMarker = new ProfilerMarker("Create and query Global Grid");
+    static readonly ProfilerMarker globalCollisionsResolverMarker = new ProfilerMarker("Resolve Global Grid");
 
 
     public void Initialize()
@@ -66,7 +72,7 @@ public class CollisionHandler : MonoBehaviour
         }
 
         _globalGrid = new(2 * _particleRadius, _totalNumberOfParticles);
-        _allParticles = new(_totalNumberOfParticles);
+        _allParticles = new Particle[_totalNumberOfParticles];
     }
 
 
@@ -74,22 +80,24 @@ public class CollisionHandler : MonoBehaviour
     {
         if (HandleCols)
         {
-            _allParticles.Clear();
+            int _currentAllParticleIdx = 0;
             foreach(KeyValuePair<int, SpatialHashGrid> pair in _selfCollisionGrids)
             {
+                var obj = Objects[pair.Key];
                 createGridMarker.Begin();
-                pair.Value.Create(Objects[pair.Key].Particles);
+                pair.Value.Create(obj.Particles);
                 createGridMarker.End();
                 queryAllMarker.Begin();
-                pair.Value.QueryAll(Objects[pair.Key].Particles, maxTravelDist);
+                pair.Value.QueryAll(obj.Particles, maxTravelDist);
                 queryAllMarker.End();
-                _allParticles.AddRange(Objects[pair.Key].Particles);
+                Array.Copy(obj.Particles, 0, _allParticles, _currentAllParticleIdx, obj.Particles.Length);
+                _currentAllParticleIdx += obj.Particles.Length;
             }
 
-            // TODO: this is fucking slow, maybe because of ToArray();
-            //var allParticlesArr = _allParticles.ToArray();
-            //_globalGrid.Create(allParticlesArr);
-            //_globalGrid.QueryAll(allParticlesArr, maxTravelDist);
+            globalCollisionsMarker.Begin();
+            _globalGrid.Create(_allParticles);
+            _globalGrid.QueryAll(_allParticles, maxTravelDist);
+            globalCollisionsMarker.End();
         }
     }
 
@@ -97,7 +105,9 @@ public class CollisionHandler : MonoBehaviour
     {
         if (HandleCols)
         {
+            globalCollisionsResolverMarker.Begin();
             HandleInterObjectCollisions(deltaT);
+            globalCollisionsResolverMarker.End();
 
             for(int i = 0; i < Objects.Length; i++)
             {
@@ -113,7 +123,8 @@ public class CollisionHandler : MonoBehaviour
 
     private void HandleSelfCollisions(int objIdx)
     {
-        float minDistance2 = (2 * _particleRadius) * (2 * _particleRadius);
+        float thickness = 2 * _particleRadius;
+        float minDistance2 = thickness * thickness;
         var obj = Objects[objIdx];
         var grid = _selfCollisionGrids[objIdx];
         var originalPos = _originalPositions[objIdx];
@@ -146,8 +157,8 @@ public class CollisionHandler : MonoBehaviour
                 float restDist2 = (originalPos[i] - originalPos[neighbourID]).sqrMagnitude;
                 if (dist2 > restDist2)
                     continue;
-                
-                float minDist = 2 * _particleRadius;
+
+                float minDist = thickness;
                 if (restDist2 < minDistance2)
                     minDist = (originalPos[i] - originalPos[neighbourID]).magnitude; 
 
@@ -171,6 +182,49 @@ public class CollisionHandler : MonoBehaviour
 
     private void HandleInterObjectCollisions(float deltaT)
     {
+        float minDist = 3f * _particleRadius;
+        float minDist2 = minDist * minDist;
 
+        for (int i = 0; i < _allParticles.Length; i++)
+        {
+            var (objIdx, objParticleIdx) = _globalToLocalIndex[i];
+            var obj = Objects[objIdx];
+
+            // Actually, if only one particle has infinite mass, we should still move the other one.
+            // However, Mathias does not do this and it might be an unlikely case anyway, because
+            // only external points to the soft body will probably be fixed
+            if (obj.Particles[objParticleIdx].W == 0.0f)
+                continue;
+
+            int first = _globalGrid.FirstAdjID[i];
+            int last = _globalGrid.FirstAdjID[i + 1];
+
+            for (int j = first; j < last; j++)
+            {
+                var (neighbourObjIdx, neighbourObjParticleIdx) = _globalToLocalIndex[_globalGrid.AdjIDs[j]];
+
+                // Self-Collisions are handled separately
+                if (objIdx == neighbourObjIdx)
+                    continue;
+
+                var neighbourObj = Objects[neighbourObjIdx];
+
+                if (neighbourObj.Particles[neighbourObjParticleIdx].W == 0.0f)
+                    continue;
+
+                // handle potential duplicates or case i = neighbourID
+                Vector3 collisionDir = neighbourObj.Particles[neighbourObjParticleIdx].X - obj.Particles[objParticleIdx].X;
+                float dist2 = collisionDir.sqrMagnitude;
+                if (dist2 > minDist2 || dist2 == 0.0f)
+                    continue;
+
+
+                // position correction
+                float dist = collisionDir.magnitude;
+                float corrScale = 0.5f * (minDist - dist) / dist;
+                obj.Particles[objParticleIdx].X -= corrScale * collisionDir;
+                neighbourObj.Particles[neighbourObjParticleIdx].X += corrScale * collisionDir;
+            }
+        }
     }
 }
