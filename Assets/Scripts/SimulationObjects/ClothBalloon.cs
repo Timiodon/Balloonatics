@@ -27,6 +27,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _useHelium = true;
 
+    [SerializeField]
+    private bool _useRuntimeNormalSmoothing = true;
+
+    [SerializeField]
+    private int _nrOfGrabParticles = 20;
+
     // Do not change this at runtime
     [SerializeField]
     private bool _handleSelfCollision = true;
@@ -259,8 +265,14 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             _tornEdges.Clear();
         }
 
-        NormalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
-        //_mesh.RecalculateNormals();
+        if (_useRuntimeNormalSmoothing)
+        {
+            NormalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
+        }
+        else
+        {
+            _mesh.RecalculateNormals();
+        }
         _mesh.RecalculateBounds();
     }
 
@@ -331,15 +343,15 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             // Add constraints to follow the mouse
             _mouseFollowConstraints.ClearConstraints();
 
-            int closestVertex = Utils.FindClosestVertex(ray, Particles);
+            int closestVertex = Utils.FindClosestVertexToRay(ray, Particles);
             if (closestVertex != -1)
             {
-                _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
                 _mouseDistance = Vector3.Distance(Particles[closestVertex].X, ray.origin);
+                _mouseFollowConstraints.mousePos = ray.origin + ray.direction * _mouseDistance;
 
-                for (int i = 0; i < _mesh.vertices.Length; i++)
+                foreach (int i in Utils.FindClosestVerticesToPoint(Particles[closestVertex].X, Particles, Math.Min(_nrOfGrabParticles, Particles.Length)))
                 {
-                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1f);
+                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { i }, 10f);
                 }
 
                 Constraints.Add(_mouseFollowConstraints);

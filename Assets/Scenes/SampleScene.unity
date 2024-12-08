@@ -206,8 +206,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0757005, y: -0.8444566, z: 0.12401376, w: 0.51554155}
-  m_LocalPosition: {x: 8.585816, y: 5.2178173, z: 7.037867}
+  m_LocalRotation: {x: -0.10905999, y: 0.86064136, z: -0.20768371, w: -0.4519623}
+  m_LocalPosition: {x: 3.0742292, y: 1.6937795, z: 3.9862633}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -498,6 +498,8 @@ MonoBehaviour:
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
+  _useRuntimeNormalSmoothing: 1
+  _nrOfGrabParticles: 20
   _handleSelfCollision: 1
   _friction: 0
   _stretchingStiffness: 100
@@ -549,7 +551,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bc1e7f1da32c56f429d0f62e39a7bdd9, type: 2}
+  - {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -608,7 +610,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _useHelium: 1
+  _useHelium: 0
+  _useRuntimeNormalSmoothing: 1
+  _nrOfGrabParticles: 20
   _handleSelfCollision: 0
   _friction: 0
   _stretchingStiffness: 50
@@ -617,7 +621,7 @@ MonoBehaviour:
   _tearingThreshold: 0.01
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.25
+  _pressure: 1
 --- !u!1 &743934075
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,6 +875,8 @@ MonoBehaviour:
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
+  _useRuntimeNormalSmoothing: 1
+  _nrOfGrabParticles: 20
   _handleSelfCollision: 1
   _friction: 0
   _stretchingStiffness: 0.5
@@ -951,7 +957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &1205662230
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1034,7 +1040,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _useHelium: 1
+  _useHelium: 0
+  _useRuntimeNormalSmoothing: 1
+  _nrOfGrabParticles: 20
   _handleSelfCollision: 0
   _friction: 0
   _stretchingStiffness: 50
@@ -1074,7 +1082,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationGameObjects:
-  - {fileID: 1468515432}
+  - {fileID: 1205662228}
   - {fileID: 603764643}
   _simulationLoopSubsteps: 2
   _collisionHandler: {fileID: 2046839124}
@@ -1119,7 +1127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1468515433
 Transform:
   m_ObjectHideFlags: 0
