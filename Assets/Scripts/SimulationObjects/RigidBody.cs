@@ -44,7 +44,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private Shape _shape = Shape.Cube;
-    private Quaternion _qPrev; // Previous orientation of the rigidbody
+    public Quaternion qPrev; // Previous orientation of the rigidbody
     private Vector3 _w; // Angular velocity, in radians per second
 
     private float _mouseDistance;
@@ -115,22 +115,16 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].X += Particles[0].V * deltaT;
 
         // Integrate angular velocity and orientation
-        _qPrev = q;
+        qPrev = q;
         _w += deltaT * InvI0.MultiplyVector(_externalTorque);
 
-        Quaternion dq = Quaternion.Euler(_w * Mathf.Rad2Deg * 0.5f * deltaT);
-        q = dq * q;
-        q.Normalize(); // Avoid drift
-
-        /*
-        // Matthias Mueller version, which is a bit unclear to me
-        Quaternion dq = Quaternion.Euler(_w * Mathf.Rad2Deg * 0.5f * deltaT) * q;
-        q.x = q.x + dq.x;
-        q.y = q.y + dq.y;
-        q.z = q.z + dq.z;
-        q.w = q.w + dq.w;
+        Quaternion dq = new Quaternion(_w.x, _w.y, _w.z, 0);
+        dq *= q;
+        q.x += 0.5f * deltaT * dq.x;
+        q.y += 0.5f * deltaT * dq.y;
+        q.z += 0.5f * deltaT * dq.z;
+        q.w += 0.5f * deltaT * dq.w;
         q.Normalize();
-        */
     }
 
     // Correct velocity to match corrected positions, needs to additionally update angular velocity
@@ -138,9 +132,10 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     {
         Particles[0].V = (Particles[0].X - Particles[0].P) / deltaT;
 
-        // Update angular velocity
-        Quaternion dq = q * Quaternion.Inverse(_qPrev);
-        _w = 2 * dq.eulerAngles * Mathf.Deg2Rad / deltaT;
+        // Matthias Müller version
+        Quaternion dq = q * Quaternion.Inverse(qPrev);
+        //dq.Normalize();
+        _w = new Vector3(dq.x, dq.y, dq.z) * (2 / deltaT);
 
         // Prevent incorrect flips (done by Matthias Mueller, but not sure how well this actually works; seems to cause some constant
         // flipping of _w in experiments)

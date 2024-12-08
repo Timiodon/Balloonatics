@@ -49,22 +49,26 @@ public class RigidGroundCollisionConstraints : IRigidConstraints
             float d = -a2.y; // penetration depth
             if (d > 0f)
             {
-                // Apply delta x = d*n    
+                // Apply delta x = d*n
                 // Compute generalized inverse masses
                 float w1 = 0; // ground has infinite mass and cannot be rotated
                 float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(constraint.localPos, n), _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.localPos, n)));
 
                 // Compute lagrange multiplier
-                float lambda = -d / (w1 + w2 + _compliance / (deltaT * deltaT)); // TODO: check if should be d not -d
+                float lambda = -d / (w1 + w2 + _compliance / (deltaT * deltaT));
 
                 // Update states
                 xNew[0].X += w2 * lambda * n;
-                Vector3 w = 0.5f * lambda * _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.localPos, n));
-                Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * _rb.q;
-                _rb.q.x = _rb.q.x + dq.x;
-                _rb.q.y = _rb.q.y + dq.y;
-                _rb.q.z = _rb.q.z + dq.z;
-                _rb.q.w = _rb.q.w + dq.w;
+                Quaternion invQ = Quaternion.Inverse(_rb.q);
+                Vector3 dw = Vector3.Cross(constraint.localPos, n);
+                dw = invQ * dw;
+                dw = _rb.InvI0.MultiplyVector(dw);
+                dw = _rb.q * dw;
+                Quaternion dq = new Quaternion(dw.x, dw.y, dw.z, 0) * _rb.q;
+                _rb.q.x += 0.5f * lambda * dq.x;
+                _rb.q.y += 0.5f * lambda * dq.y;
+                _rb.q.z += 0.5f * lambda * dq.z;
+                _rb.q.w += 0.5f * lambda * dq.w;
                 _rb.q.Normalize();
             }
         }
