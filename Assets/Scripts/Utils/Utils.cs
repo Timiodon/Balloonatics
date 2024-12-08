@@ -1,10 +1,13 @@
+using NUnit.Framework;
+using System;
+using System.Linq;
 using UnityEngine;
 
 public static class Utils
 {
     // Finds closest vertex index to ray that is at most 0.42 units away, otherwise returns -1
     // TODO: it would probably be better to check whether the ray intersects the mesh instead of checking the distance to the closest vertex
-    public static int FindClosestVertex(Ray ray, Particle[] particles, float distanceThreshold = 0.42f)
+    public static int FindClosestVertexToRay(Ray ray, Particle[] particles, float distanceThreshold = 0.42f)
     {
         int closestIndex = -1;
         float closestDistance = Mathf.Infinity;
@@ -21,6 +24,24 @@ public static class Utils
         }
 
         return closestIndex;
+    }
+
+    // Finds n closest vertices to point
+    public static int[] FindClosestVerticesToPoint(Vector3 point, Particle[] particles, int n)
+    {
+        var indexedDistances = particles
+            .Select((particle, index) => new { Index = index, Distance = Vector3.Distance(point, particle.X) })
+            .ToList();
+
+        indexedDistances.Sort((a, b) => a.Distance.CompareTo(b.Distance));
+
+        // Take the first n indices
+        int[] closestVertices = indexedDistances
+            .Take(n)
+            .Select(item => item.Index)
+            .ToArray();
+
+        return closestVertices;
     }
 
     public static Vector3 FindClosestPointOnRay(Ray ray, Particle[] particles)

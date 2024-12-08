@@ -9,6 +9,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public Particle[] Particles { get; set; }
     public List<IClothConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
+    public bool UseHelium { get => _useHelium; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
     public float HashcellSize {  get => _hashcellSize; }
     public float Friction { get => _friction; }
@@ -26,6 +27,14 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     // calculate cellDistance depending on avg edge length
     private float _hashcellSize = 0.01f; 
+    [SerializeField]
+    private bool _useHelium = true;
+
+    [SerializeField]
+    private bool _useRuntimeNormalSmoothing = true;
+
+    [SerializeField]
+    private int _nrOfGrabParticles = 20;
 
     // Do not change this at runtime
     [SerializeField]
@@ -64,6 +73,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private int[] vertexIdToParticleIdMap;
 
     private float _mouseDistance;
+    private bool _popped = false;
 
     private OverpressureConstraints _overpressureConstraints;
     private StretchingConstraints _stretchingConstraints;
@@ -176,8 +186,11 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             if (Particles[i].W == 0.0f)
                 continue;
 
-            if (UseGravity)
-                Particles[i].V.y += ISimulationObject.GRAVITY * deltaT;
+            // For helium, we assume it exactly cancels gravity at pressure = 1 and scales linearly with pressure
+            // Helium is only active if the object did not pop
+            float heliumAcc = (UseHelium && !_popped) ? 10 * _overpressureConstraints.Pressure : 0;
+            float gravityAcc = UseGravity ? ISimulationObject.GRAVITY : 0;
+            Particles[i].V.y += (heliumAcc + gravityAcc) * deltaT;
 
             // This ensures that we do not miss any collisions
             if (HandleSelfCollision && Particles[i].V.magnitude > maxSpeed)
@@ -237,6 +250,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         if (_tornEdges.Count > 0)
         {
+            _popped = true;
             var removeMask = new System.Collections.BitArray(_mesh.triangles.Length);
             for (int i = 0; i < _mesh.triangles.Length; i += 3)
             {
@@ -256,7 +270,14 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             _tornEdges.Clear();
         }
 
-        _mesh.RecalculateNormals();
+        if (_useRuntimeNormalSmoothing)
+        {
+            NormalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
+        }
+        else
+        {
+            _mesh.RecalculateNormals();
+        }
         _mesh.RecalculateBounds();
     }
 
@@ -328,15 +349,15 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             // Add constraints to follow the mouse
             _mouseFollowConstraints.ClearConstraints();
 
-            int closestVertex = Utils.FindClosestVertex(ray, Particles);
+            int closestVertex = Utils.FindClosestVertexToRay(ray, Particles);
             if (closestVertex != -1)
             {
-                _mouseFollowConstraints.mousePos = Particles[closestVertex].X;
                 _mouseDistance = Vector3.Distance(Particles[closestVertex].X, ray.origin);
+                _mouseFollowConstraints.mousePos = ray.origin + ray.direction * _mouseDistance;
 
-                for (int i = 0; i < _mesh.vertices.Length; i++)
+                foreach (int i in Utils.FindClosestVerticesToPoint(Particles[closestVertex].X, Particles, Math.Min(_nrOfGrabParticles, Particles.Length)))
                 {
-                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { vertexIdToParticleIdMap[i] }, 1f);
+                    _mouseFollowConstraints.AddConstraint(Particles, new List<int> { i }, 10f);
                 }
 
                 Constraints.Add(_mouseFollowConstraints);
