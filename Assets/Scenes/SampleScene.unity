@@ -610,7 +610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalMass: 1
   _useGravity: 1
-  _useHelium: 1
+  _useHelium: 0
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
@@ -621,7 +621,7 @@ MonoBehaviour:
   _tearingThreshold: 0.01
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.25
+  _pressure: 1
 --- !u!1 &743934075
 GameObject:
   m_ObjectHideFlags: 0
@@ -1039,7 +1039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &1205662230
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1165,10 +1165,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _simulationGameObjects:
   - {fileID: 603764643}
-  - {fileID: 1468515432}
+  - {fileID: 1205662228}
   _simulationLoopSubsteps: 10
   _collisionHandler: {fileID: 2046839124}
-  _handleCollisions: 0
+  _handleCollisions: 1
 --- !u!4 &1299752114
 Transform:
   m_ObjectHideFlags: 0
@@ -1209,7 +1209,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1468515433
 Transform:
   m_ObjectHideFlags: 0
