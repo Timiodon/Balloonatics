@@ -61,6 +61,7 @@ public class RigidGroundCollisionConstraints : IRigidConstraints
                 _rb.ApplyCorrection(_compliance, d * Vector3.up, a2, deltaT);
             }
             //constraint.previousDepth = d;
+			//_constraints[i] = constraint; // structs are copied by value
         }
 
     }
