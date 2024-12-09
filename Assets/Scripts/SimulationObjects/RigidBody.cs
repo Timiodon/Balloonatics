@@ -48,6 +48,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     private Vector3 _w; // Angular velocity, in radians per second
 
     private float _mouseDistance;
+    private Vector3[] _localParticlePositions;
 
     private RigidMouseFollowConstraints _mouseFollowConstraints;
     private RigidGroundCollisionConstraints _groundCollisionConstraints;
@@ -57,11 +58,10 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Constraints = new List<IRigidConstraints>();
         q = transform.rotation;
 
-        Particles = new Particle[1];
-        Particles[0] = new Particle(transform.position, Vector3.zero, _totalMass);
-
         // Calculate initial, inverse moment of inertia for different shapes
         Vector3 size = GetComponent<MeshFilter>().sharedMesh.bounds.size;
+        // Account for Unity's scaling of the mesh
+        size = size.CwiseProduct(transform.localScale);
         float Ixx = 1;
         float Iyy = 1;
         float Izz = 1;
@@ -106,24 +106,31 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Dictionary<Vector3, int> positionToParticleMap = new();
         for (int i = 0; i < n; i++)
         {
-            displacedVertices[i] = _mesh.vertices[i];
-            if (positionToParticleMap.TryGetValue(_mesh.vertices[i], out int particleIndex))
+            displacedVertices[i] = _mesh.vertices[i].CwiseProduct(transform.localScale);
+            if (positionToParticleMap.TryGetValue(_mesh.vertices[i].CwiseProduct(transform.localScale), out int particleIndex))
             {
                 vertexIdToParticleIdMap[i] = particleIndex;
             }
             else
             {
                 int nextIndex = positionToParticleMap.Count;
-                positionToParticleMap[_mesh.vertices[i]] = nextIndex;
+                positionToParticleMap[_mesh.vertices[i].CwiseProduct(transform.localScale)] = nextIndex;
                 vertexIdToParticleIdMap[i] = nextIndex;
             }
         }
+
+        Particles = new Particle[positionToParticleMap.Count + 1];
+        _localParticlePositions = new Vector3[positionToParticleMap.Count];
+        // Initialize particles, only first particle is used for rigid body calculations, others are solely used for collisions
+        Particles[0] = new Particle(transform.position, Vector3.zero, _totalMass);
 
         _groundCollisionConstraints = new RigidGroundCollisionConstraints();
         int idx = 0;
         foreach (KeyValuePair<Vector3, int> particlesAndIndices in positionToParticleMap)
         {
             _groundCollisionConstraints.AddConstraint(this, particlesAndIndices.Key, idx++);
+            _localParticlePositions[particlesAndIndices.Value] = particlesAndIndices.Key;
+            Particles[particlesAndIndices.Value + 1] = new Particle(LocalToWorld(particlesAndIndices.Key), Vector3.zero, _totalMass);
         }
         Constraints.Add(_groundCollisionConstraints);
     }
@@ -189,8 +196,11 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
     public void UpdateMesh()
     {
-        transform.position = Particles[0].X;
-        transform.rotation = q;
+        transform.SetPositionAndRotation(Particles[0].X, q);
+        for (int i = 0; i < _localParticlePositions.Length; i++)
+        {
+            Particles[i + 1].X = LocalToWorld(_localParticlePositions[i]);
+        }
     }
 
     public float GetInverseMass(Vector3 n, Vector3 worldPos)
@@ -221,7 +231,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         float alpha = compliance / deltaT / deltaT;
         float lambda = -C / (w + alpha);
 
-        Debug.Log("Constraint force: " + lambda * n / (deltaT * deltaT));
+        //Debug.Log("Constraint force: " + lambda * n / (deltaT * deltaT));
         ApplyCorrection(-lambda, n, worldPos);
     }
 
@@ -298,5 +308,11 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     {
         if (Constraints != null && (Constraints.Contains(_mouseFollowConstraints)))
             Gizmos.DrawSphere(_mouseFollowConstraints.mousePos, 0.05f);
+
+        if (Particles != null)
+            foreach (Particle p in Particles)
+            {
+                Gizmos.DrawSphere(p.X, 0.05f);
+            }
     }
 }

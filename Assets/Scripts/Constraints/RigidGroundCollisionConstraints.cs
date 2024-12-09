@@ -52,16 +52,16 @@ public class RigidGroundCollisionConstraints : IRigidConstraints
             float d = -a2.y; // penetration depth
             if (d > 0f)
             {
-                Debug.Log("Vertex " + constraint.vertexId + " penetrates with depth " + d);
+                //Debug.Log("Vertex " + constraint.vertexId + " penetrates with depth " + d);
                 if (d > constraint.previousDepth && constraint.previousDepth > 0)
                 {
-                    Debug.LogWarning("Penetration depth increased");
+                    //Debug.LogWarning("Penetration depth increased");
                     //d = constraint.previousDepth;
                 }
                 _rb.ApplyCorrection(_compliance, d * Vector3.up, a2, deltaT);
             }
             //constraint.previousDepth = d;
-			//_constraints[i] = constraint; // structs are copied by value
+            //_constraints[i] = constraint; // structs are copied by value
         }
 
     }
