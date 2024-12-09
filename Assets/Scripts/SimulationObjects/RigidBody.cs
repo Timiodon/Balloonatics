@@ -96,10 +96,34 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         _mouseFollowConstraints.AddConstraint(this, 1f);
 
         // Add a ground collision constraint for every vertex of the rigidbody
-        _groundCollisionConstraints = new RigidGroundCollisionConstraints();
-        foreach (Vector3 vertex in GetComponent<MeshFilter>().sharedMesh.vertices)
+        // First perform de-duplication
+        // Vertices are usually duplicated in meshes so each quad can have it's own set of verts. We don't want duplicate particles so we have to do this mapping.
+        Mesh _mesh = GetComponent<MeshFilter>().sharedMesh;
+        int n = _mesh.vertices.Length;
+        Vector3[] displacedVertices = new Vector3[n];
+        int[] vertexIdToParticleIdMap; vertexIdToParticleIdMap = new int[n];
+        // Use a hashtable to do duplication detection of the positions
+        Dictionary<Vector3, int> positionToParticleMap = new();
+        for (int i = 0; i < n; i++)
         {
-            _groundCollisionConstraints.AddConstraint(this, vertex);
+            displacedVertices[i] = _mesh.vertices[i];
+            if (positionToParticleMap.TryGetValue(_mesh.vertices[i], out int particleIndex))
+            {
+                vertexIdToParticleIdMap[i] = particleIndex;
+            }
+            else
+            {
+                int nextIndex = positionToParticleMap.Count;
+                positionToParticleMap[_mesh.vertices[i]] = nextIndex;
+                vertexIdToParticleIdMap[i] = nextIndex;
+            }
+        }
+
+        _groundCollisionConstraints = new RigidGroundCollisionConstraints();
+        int idx = 0;
+        foreach (KeyValuePair<Vector3, int> particlesAndIndices in positionToParticleMap)
+        {
+            _groundCollisionConstraints.AddConstraint(this, particlesAndIndices.Key, idx++);
         }
         Constraints.Add(_groundCollisionConstraints);
     }
@@ -167,6 +191,68 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     {
         transform.position = Particles[0].X;
         transform.rotation = q;
+    }
+
+    public float GetInverseMass(Vector3 n, Vector3 worldPos)
+    {
+        if (Mathf.Approximately(Particles[0].W, 0))
+            return 0;
+
+        return Particles[0].W + Vector3.Dot(Vector3.Cross(WorldToLocal(worldPos), n), InvI0.MultiplyVector(Vector3.Cross(WorldToLocal(worldPos), n)));
+    }
+
+    // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of zero
+    public void ApplyCorrection(float compliance, Vector3 correction, Vector3 worldPos, float deltaT)
+    {
+        if (Mathf.Approximately(correction.sqrMagnitude, 0f))
+            return;
+
+        float C = correction.magnitude;
+        Vector3 n = correction.normalized;
+
+        // Compute generalized inverse mass
+        float w = GetInverseMass(n, worldPos);
+
+        // Note we don't have to add w2 since it's zero
+
+        if (Mathf.Approximately(w, 0))
+            return;
+
+        float alpha = compliance / deltaT / deltaT;
+        float lambda = -C / (w + alpha);
+
+        Debug.Log("Constraint force: " + lambda * n / (deltaT * deltaT));
+        ApplyCorrection(-lambda, n, worldPos);
+    }
+
+    public void ApplyCorrection(float lambda, Vector3 n, Vector3 worldPos)
+    {
+        // Linear correction
+        Particles[0].X += Particles[0].W * lambda * n;
+
+        // Angular correction v1
+        Vector3 w = 0.5f * lambda * InvI0.MultiplyVector(Vector3.Cross(WorldToLocal(worldPos), n));
+        Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * q;
+        q.x += dq.x;
+        q.y += dq.y;
+        q.z += dq.z;
+        q.w += dq.w;
+        q.Normalize();
+
+        // Angular correction v2
+        /*
+        Quaternion invQ = Quaternion.Inverse(q);
+        Vector3 dw = Vector3.Cross(WorldToLocal(worldPos), correction);
+        dw = invQ * dw;
+        dw = InvI0.MultiplyVector(dw);
+        dw = q * dw;
+        Quaternion dq = new Quaternion(dw.x, dw.y, dw.z, 0) * q;
+        q.x += 0.5f * dq.x;
+        q.y += 0.5f * dq.y;
+        q.z += 0.5f * dq.z;
+        q.w += 0.5f * dq.w;
+        q.Normalize();
+        */
     }
 
     protected virtual void Update()
