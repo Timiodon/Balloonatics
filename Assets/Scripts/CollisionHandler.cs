@@ -81,15 +81,19 @@ public class CollisionHandler : MonoBehaviour
         if (HandleCols)
         {
             int _currentAllParticleIdx = 0;
-            foreach(KeyValuePair<int, SpatialHashGrid> pair in _selfCollisionGrids)
+            for(int i = 0; i < Objects.Length; i++)
             {
-                var obj = Objects[pair.Key];
-                createGridMarker.Begin();
-                pair.Value.Create(obj.Particles);
-                createGridMarker.End();
-                queryAllMarker.Begin();
-                pair.Value.QueryAll(obj.Particles, maxTravelDist);
-                queryAllMarker.End();
+                var obj = Objects[i];
+                if (obj.HandleSelfCollision)
+                {
+                    var grid = _selfCollisionGrids[i];
+                    createGridMarker.Begin();
+                    grid.Create(obj.Particles);
+                    createGridMarker.End();
+                    queryAllMarker.Begin();
+                    grid.QueryAll(obj.Particles, maxTravelDist);
+                    queryAllMarker.End();
+                }
                 Array.Copy(obj.Particles, 0, _allParticles, _currentAllParticleIdx, obj.Particles.Length);
                 _currentAllParticleIdx += obj.Particles.Length;
             }
@@ -182,7 +186,7 @@ public class CollisionHandler : MonoBehaviour
 
     private void HandleInterObjectCollisions(float deltaT)
     {
-        float minDist = 3f * _particleRadius;
+        float minDist = 2.5f * _particleRadius;
         float minDist2 = minDist * minDist;
 
         for (int i = 0; i < _allParticles.Length; i++)
