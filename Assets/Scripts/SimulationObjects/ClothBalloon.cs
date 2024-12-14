@@ -48,6 +48,14 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private bool _handleInterObjectCollisions = true;
 
+    [Header("Constraints")]
+    [SerializeField]
+    private bool _useStretchingConstraint = true;
+    [SerializeField]
+    private bool _useOverpressureConstraint = true;
+    [SerializeField]
+    private bool _useBendingCosntraint = true;
+    
     [Header("Constraint stiffnesses")]
     [SerializeField]
     private float _stretchingStiffness = 0.5f;
@@ -179,7 +187,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
         _normalSolver = new(_mesh);
-        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints/*, _bendingConstraints */};
+        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints};
         Debug.Log(this.gameObject.name + ": " + Particles.Length + " number of Particles \n");
     }
 
@@ -249,8 +257,11 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         _stretchingConstraints.ComplianceScale = _stretchingComplianceScale;
         _stretchingConstraints.TearingThreshold = _tearingThreshold;
+        _stretchingConstraints.Enabled = _useStretchingConstraint;
         _bendingConstraints.ComplianceScale = _bendingComplianceScale;
+        _bendingConstraints.Enabled = _useBendingCosntraint;
         _overpressureConstraints.Pressure = _pressure;
+        _overpressureConstraints.Enabled = _useOverpressureConstraint;
 
         _mesh.vertices = displacedVertices;
 

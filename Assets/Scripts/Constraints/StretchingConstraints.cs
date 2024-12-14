@@ -30,6 +30,7 @@ public class StretchingConstraints : IClothConstraints
 {
     private List<StretchingConstraint> _constraints = new();
     public float ComplianceScale = 1f;
+    public bool Enabled = true;
     public float TearingThreshold = 0.5f;
 
     public System.Action<List<(int, int)>> tearEdgesCallback;
@@ -71,6 +72,9 @@ public class StretchingConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+        if (!Enabled)
+            return; 
+
         List<(int, int)> tornEdges = null;
 
         solveMarker.Begin();
