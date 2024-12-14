@@ -117,10 +117,16 @@ public class CollisionHandler : MonoBehaviour
                     var (neighbourObjIdx, neighbourObjParticleIdx) = _globalToLocalIndex[_globalGrid.AdjIDs[j]];
 
                     // Self-Collisions are handled separately
-                    if (objIdx == neighbourObjIdx && obj.HandleSelfCollision)
-                        HandleSelfCollision(obj, _originalPositions[objIdx], objParticleIdx, neighbourObjParticleIdx);
-                    else if (obj.HandleInterObjectCollisions || Objects[neighbourObjIdx].HandleInterObjectCollisions)
-                        HandleInterObjectCollision(obj, Objects[neighbourObjIdx], objParticleIdx, neighbourObjParticleIdx);
+                    if (objIdx == neighbourObjIdx)
+                    {
+                        if (obj.HandleSelfCollision)
+                            HandleSelfCollision(obj, _originalPositions[objIdx], objParticleIdx, neighbourObjParticleIdx);
+                    }
+                    else
+                    {
+                        if (obj.HandleInterObjectCollisions || Objects[neighbourObjIdx].HandleInterObjectCollisions)
+                            HandleInterObjectCollision(obj, Objects[neighbourObjIdx], objParticleIdx, neighbourObjParticleIdx);
+                    }
                 }
             }
             collisionsMarker.End();
@@ -186,7 +192,6 @@ public class CollisionHandler : MonoBehaviour
             return;
 
         // position correction
-        UnityEngine.Debug.Log("Hello");
         float dist = collisionDir.magnitude;
         float corrScale = 0.5f * (minDist - dist) / dist;
         float massObj = obj.Particles[objParticleIdx].M;
