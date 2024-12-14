@@ -73,6 +73,11 @@ public class BalloonHouse : RigidBody
 
         for (int i = 0; i < _balloons.Count; i++)
         {
+            if (_balloons[i].Popped)
+            {
+                _ropes[i].enabled = false;
+                continue;
+            }
             //Debug.DrawLine(_balloons[i].Particles[_attachementParticleIndex[i]].X, LocalToWorld(_rbLocalPos), Color.white);
             _ropes[i].SetPosition(0, _balloons[i].Particles[_attachementParticleIndex[i]].X);
             _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPoses[i]));
