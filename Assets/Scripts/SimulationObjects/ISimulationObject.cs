@@ -8,6 +8,7 @@ public struct Particle
         X = x;
         V = v;
         W = 1f / m;
+        M = m;
         P = x;
     }
 
@@ -19,6 +20,9 @@ public struct Particle
 
     // Inverse mass
     public float W;
+
+    // Mass
+    public float M;
 
     // Previous position
     public Vector3 P;

@@ -190,5 +190,14 @@ public class CollisionHandler : MonoBehaviour
         float corrScale = 0.5f * (minDist - dist) / dist;
         obj.Particles[objParticleIdx].X -= corrScale * collisionDir;
         neighbourObj.Particles[neighbourObjParticleIdx].X += corrScale * collisionDir;
+
+        // apply momentum conservation
+        float massObj = obj.Particles[objParticleIdx].M;
+        float massNeighbour = neighbourObj.Particles[neighbourObjParticleIdx].M;
+        float totalMass = massObj + massNeighbour;
+        obj.Particles[objParticleIdx].V = 
+            ((massObj - massNeighbour) / totalMass) * obj.Particles[objParticleIdx].V + (2f * massNeighbour / totalMass) * neighbourObj.Particles[neighbourObjParticleIdx].V;
+        neighbourObj.Particles[neighbourObjParticleIdx].V =
+            ((massNeighbour - massObj) / totalMass) * neighbourObj.Particles[neighbourObjParticleIdx].V + (2f * massObj / totalMass) * obj.Particles[objParticleIdx].V;
     }
 }
