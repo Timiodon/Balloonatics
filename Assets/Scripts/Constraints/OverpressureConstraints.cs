@@ -8,6 +8,7 @@ public class OverpressureConstraints : IClothConstraints
 {
     public Dictionary<int, int[]> TriangleToParticleIndices;
     public float Pressure = 1f;
+    public bool Enabled = true;
 
     private Vector3[] _gradients;
     private float _compliance;
@@ -56,7 +57,7 @@ public class OverpressureConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
-        if (_popped)
+        if (_popped || !Enabled)
             return;
 
         solveMarker.Begin();

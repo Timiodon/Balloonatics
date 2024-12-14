@@ -38,6 +38,7 @@ public class BendingConstraints : IClothConstraints
 {
     private List<BendingConstraint> _constraints = new();
     public float ComplianceScale = 1f;
+    public bool Enabled = true;
 
     static readonly ProfilerMarker solveMarker = new ProfilerMarker("Solve Bending Constraint");
 
@@ -79,6 +80,9 @@ public class BendingConstraints : IClothConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+        if (!Enabled)
+            return;
+
         solveMarker.Begin();
         foreach (var constraint in _constraints)
         {

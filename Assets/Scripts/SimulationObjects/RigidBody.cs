@@ -72,25 +72,25 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         switch (_shape)
         {
             case Shape.Cube:
-                Ixx = _totalMass / 12 * (size.y * size.y + size.z * size.z);
-                Iyy = _totalMass / 12 * (size.x * size.x + size.z * size.z);
-                Izz = _totalMass / 12 * (size.x * size.x + size.y * size.y);
+                Ixx = _totalMass / 12f * (size.y * size.y + size.z * size.z);
+                Iyy = _totalMass / 12f * (size.x * size.x + size.z * size.z);
+                Izz = _totalMass / 12f * (size.x * size.x + size.y * size.y);
                 break;
             case Shape.Sphere:
                 float r = size.x / 2;
-                Ixx = 2 / 5 * _totalMass * r * r;
+                Ixx = 2f / 5f * _totalMass * r * r;
                 Iyy = Ixx;
                 Izz = Ixx;
                 break;
             case Shape.Cylinder:
-                float r1 = size.x / 2;
+                float r1 = size.x / 2f;
                 float h = size.y;
-                Ixx = _totalMass / 12 * (3 * r1 * r1 + h * h);
-                Iyy = _totalMass / 2 * r1 * r1;
+                Ixx = _totalMass / 12f * (3f * r1 * r1 + h * h);
+                Iyy = _totalMass / 2f * r1 * r1;
                 Izz = Ixx;
                 break;
         }
-        InvI0 = Matrix4x4.Scale(new Vector3(1 / Ixx, 1 / Iyy, 1 / Izz));
+        InvI0 = Matrix4x4.Scale(new Vector3(1f / Ixx, 1f / Iyy, 1f / Izz));
 
         // Print _invIO for debugging
         //Debug.Log("_invIO: " + _invI0);

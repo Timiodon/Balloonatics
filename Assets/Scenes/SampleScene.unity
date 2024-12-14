@@ -169,15 +169,18 @@ MonoBehaviour:
   _useGravity: 1
   _useHelium: 0
   _useRuntimeNormalSmoothing: 1
-  _nrOfGrabParticles: 20
+  _nrOfGrabParticles: 200
   _handleSelfCollision: 1
   _friction: 0
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
+  _useStretchingConstraint: 1
+  _useOverpressureConstraint: 1
+  _useBendingCosntraint: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
   _bendingStiffness: 0.5
-  _tearingThreshold: 200
+  _tearingThreshold: 20
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
   _pressure: 1
@@ -619,6 +622,9 @@ MonoBehaviour:
   _friction: 0
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
+  _useStretchingConstraint: 1
+  _useOverpressureConstraint: 1
+  _useBendingCosntraint: 1
   _stretchingStiffness: 100
   _overpressureStiffness: 50
   _bendingStiffness: 100
@@ -734,6 +740,9 @@ MonoBehaviour:
   _friction: 0
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
+  _useStretchingConstraint: 1
+  _useOverpressureConstraint: 1
+  _useBendingCosntraint: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
   _bendingStiffness: 0.5
@@ -1151,6 +1160,9 @@ MonoBehaviour:
   _friction: 0
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
+  _useStretchingConstraint: 1
+  _useOverpressureConstraint: 1
+  _useBendingCosntraint: 1
   _stretchingStiffness: 0.5
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
@@ -1466,6 +1478,9 @@ MonoBehaviour:
   _friction: 0
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
+  _useStretchingConstraint: 1
+  _useOverpressureConstraint: 1
+  _useBendingCosntraint: 1
   _stretchingStiffness: 50
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
@@ -1544,7 +1559,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 0
-  _shape: 0
+  _shape: 1
   qPrev: {x: 0, y: 0, z: 0, w: 0}
 --- !u!135 &1259940864
 SphereCollider:
