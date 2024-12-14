@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class FollowObject : MonoBehaviour
 {
-	[SerializeField]
-	Transform followObject;
+    [SerializeField]
+    Transform followObject;
 
-	Vector3 offset;
+    Vector3 offset;
 
-	private void Start()
-	{
-		offset = transform.position - followObject.position;
-	}
-
-	// Update is called once per frame
-	void Update()
+    private void Start()
     {
-		transform.position = followObject.position + offset;
+        offset = transform.position - followObject.position;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.position = followObject.position + offset;
     }
 }

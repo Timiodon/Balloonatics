@@ -11,9 +11,12 @@ public class BalloonHouse : RigidBody
     [SerializeField]
     private Material _ropeMaterial;
 
+    [SerializeField]
+    float _attachPosRadius;
+
     private int[] _attachementParticleIndex;
     private LineRenderer[] _ropes;
-    private Vector3 _rbLocalPos;
+    private Vector3[] _rbLocalPoses;
 
     public override void Initialize()
     {
@@ -22,6 +25,7 @@ public class BalloonHouse : RigidBody
 
         _attachementParticleIndex = new int[_balloons.Count];
         _ropes = new LineRenderer[_balloons.Count];
+        _rbLocalPoses = new Vector3[_balloons.Count];
         // Attach the balloons to the house
         for (int i = 0; i < _balloons.Count; i++)
         {
@@ -41,7 +45,8 @@ public class BalloonHouse : RigidBody
 
             // Use the sharedMesh bounds to retrieve the max Y value of the house
             Vector3 size = GetComponent<MeshFilter>().sharedMesh.bounds.size;
-            _rbLocalPos = new Vector3(0, size.y / 2, 0);
+            float attachPosAngle = Mathf.PI * 2 * i / _balloons.Count;
+            _rbLocalPoses[i] = new Vector3(Mathf.Cos(attachPosAngle) * _attachPosRadius, size.y / 2, Mathf.Sin(attachPosAngle) * _attachPosRadius);
 
             // Create a rope between the balloon and the house
             GameObject newRope = new GameObject($"Rope {i}");
@@ -53,10 +58,10 @@ public class BalloonHouse : RigidBody
             _ropes[i].endWidth = 0.015f;
             _ropes[i].positionCount = 2;
             _ropes[i].SetPosition(0, _balloons[i].Particles[lowestParticleIndex].X);
-            _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPos));
+            _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPoses[i]));
 
             // Attach balloon to highest, middle y value of house and lowest particle of balloon
-            _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPos);
+            _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPoses[i]);
             Constraints.Add(_clothToRigidStretchingConstraints);
         }
 
@@ -70,7 +75,7 @@ public class BalloonHouse : RigidBody
         {
             //Debug.DrawLine(_balloons[i].Particles[_attachementParticleIndex[i]].X, LocalToWorld(_rbLocalPos), Color.white);
             _ropes[i].SetPosition(0, _balloons[i].Particles[_attachementParticleIndex[i]].X);
-            _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPos));
+            _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPoses[i]));
         }
     }
 }

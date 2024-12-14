@@ -35,6 +35,9 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     [SerializeField]
     private float _friction = 0.0f;
 
+    [SerializeField]
+    private bool _updateAngularVelocity = true;
+
     public enum Shape
     {
         Cube,
@@ -167,9 +170,12 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].V = (Particles[0].X - Particles[0].P) / deltaT;
 
         // Matthias Müller version
-        Quaternion dq = q * Quaternion.Inverse(qPrev);
-        //dq.Normalize();
-        _w = new Vector3(dq.x, dq.y, dq.z) * (2 / deltaT);
+        if (_updateAngularVelocity)
+        {
+            Quaternion dq = q * Quaternion.Inverse(qPrev);
+            //dq.Normalize();
+            _w = new Vector3(dq.x, dq.y, dq.z) * (2 / deltaT);
+        }
 
         // Prevent incorrect flips (done by Matthias Mueller, but not sure how well this actually works; seems to cause some constant
         // flipping of _w in experiments)
