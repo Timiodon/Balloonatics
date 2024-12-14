@@ -12,7 +12,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public bool UseHelium { get => _useHelium; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
     public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
-    public float HashcellSize {  get => _hashcellSize; }
+    public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
 
     private Mesh _mesh;
@@ -27,23 +27,26 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private bool _useGravity = true;
 
     // calculate cellDistance depending on avg edge length
-    private float _hashcellSize = 0.01f; 
+    private float _hashcellSize = 0.01f;
     [SerializeField]
     private bool _useHelium = true;
 
     [SerializeField]
     private bool _useRuntimeNormalSmoothing = true;
+    private NormalSolver _normalSolver;
 
     [SerializeField]
     private int _nrOfGrabParticles = 20;
 
+    [Header("Collisions")]
     [SerializeField]
     private bool _handleSelfCollision = true;
     [SerializeField]
-    private bool _handleInterObjectCollisions = true;
-
-    [SerializeField]
     private float _friction = 0.0f;
+    [SerializeField]
+    private bool _enforceMaxSpeed = true;
+    [SerializeField]
+    private bool _handleInterObjectCollisions = true;
 
     [Header("Constraint stiffnesses")]
     [SerializeField]
@@ -175,6 +178,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
                 }
             }
         }
+        _normalSolver = new(_mesh);
         Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints/*, _bendingConstraints */};
         Debug.Log(this.gameObject.name + ": " + Particles.Length + " number of Particles \n");
     }
@@ -195,7 +199,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             Particles[i].V.y += (heliumAcc + gravityAcc) * deltaT;
 
             // This ensures that we do not miss any collisions
-            if (HandleSelfCollision && Particles[i].V.magnitude > maxSpeed)
+            if (HandleSelfCollision && _enforceMaxSpeed && Particles[i].V.magnitude > maxSpeed)
                 Particles[i].V *= maxSpeed / Particles[i].V.magnitude;
 
 
@@ -274,7 +278,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         if (_useRuntimeNormalSmoothing)
         {
-            NormalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
+            _normalSolver.RecalculateNormals(_mesh, 60f, 0.1f);
         }
         else
         {

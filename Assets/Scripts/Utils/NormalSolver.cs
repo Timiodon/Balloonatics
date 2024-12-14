@@ -34,8 +34,30 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class NormalSolver
+public class NormalSolver
 {
+    //Normal of each triangle
+    Vector3[] triNormals;
+    //Weighted normal of each triangle
+    Vector3[] triNormalsWeighted;
+    Vector3[] normals;
+    Dictionary<VertexKey, VertexEntry> dictionary;
+    List<Vector3> normalSet;
+    List<VertexEntry> vertexEntryPool;
+    int _vertexEntryPoolIndex;
+
+    public NormalSolver(Mesh mesh)
+    {
+        var triangles = mesh.GetTriangles(0);
+        var vertices = mesh.vertices;
+        triNormals = new Vector3[triangles.Length / 3]; //Normal of each triangle
+        triNormalsWeighted = new Vector3[triangles.Length / 3]; //Weighted normal of each triangle
+        normals = new Vector3[vertices.Length];
+        dictionary = new Dictionary<VertexKey, VertexEntry>(vertices.Length);
+        normalSet = new List<Vector3>();
+        vertexEntryPool = new List<VertexEntry>();
+    }
+
     /// <summary>
     ///     Recalculate the normals of a mesh based on an angle threshold. This takes
     ///     into account distinct vertices that have the same position.
@@ -49,17 +71,21 @@ public static class NormalSolver
     ///     A fraction between 0 and 1.
     ///     Weights smaller than this fraction relative to the largest weight are ignored.
     /// </param>
-    public static void RecalculateNormals(this Mesh mesh, float angle, float ignoreFactor)
+    public void RecalculateNormals(Mesh mesh, float angle, float ignoreFactor)
     {
         var triangles = mesh.GetTriangles(0);
         var vertices = mesh.vertices;
-        var triNormals = new Vector3[triangles.Length / 3]; //Normal of each triangle
-        var triNormalsWeighted = new Vector3[triangles.Length / 3]; //Weighted normal of each triangle
-        var normals = new Vector3[vertices.Length];
+        var tmpSize = triangles.Length / 3;
+        if (triNormals.Length < tmpSize)
+            Array.Resize(ref triNormals, tmpSize);
+        if (triNormalsWeighted.Length < tmpSize)
+            Array.Resize(ref triNormalsWeighted, tmpSize);
+        if (normals.Length < vertices.Length)
+            Array.Resize(ref normals, vertices.Length);
 
         angle = angle * Mathf.Deg2Rad;
-
-        var dictionary = new Dictionary<VertexKey, VertexEntry>(vertices.Length);
+        _vertexEntryPoolIndex = 0;
+        dictionary.Clear();
 
         //Goes through all the triangles and gathers up data to be used later
         for (var i = 0; i < triangles.Length; i += 3)
@@ -87,21 +113,30 @@ public static class NormalSolver
 
             if (!dictionary.TryGetValue(key = new VertexKey(vertices[i1]), out entry))
             {
-                entry = new VertexEntry();
+                if (_vertexEntryPoolIndex >= vertexEntryPool.Count)
+                    vertexEntryPool.Add(new VertexEntry());
+                entry = vertexEntryPool[_vertexEntryPoolIndex++];
+                entry.Reset();
                 dictionary.Add(key, entry);
             }
             entry.Add(i1, triIndex);
 
             if (!dictionary.TryGetValue(key = new VertexKey(vertices[i2]), out entry))
             {
-                entry = new VertexEntry();
+                if (_vertexEntryPoolIndex >= vertexEntryPool.Count)
+                    vertexEntryPool.Add(new VertexEntry());
+                entry = vertexEntryPool[_vertexEntryPoolIndex++];
+                entry.Reset();
                 dictionary.Add(key, entry);
             }
             entry.Add(i2, triIndex);
 
             if (!dictionary.TryGetValue(key = new VertexKey(vertices[i3]), out entry))
             {
-                entry = new VertexEntry();
+                if (_vertexEntryPoolIndex >= vertexEntryPool.Count)
+                    vertexEntryPool.Add(new VertexEntry());
+                entry = vertexEntryPool[_vertexEntryPoolIndex++];
+                entry.Reset();
                 dictionary.Add(key, entry);
             }
             entry.Add(i3, triIndex);
@@ -124,7 +159,7 @@ public static class NormalSolver
         //  }
         //}
 
-        List<Vector3> normalSet = new List<Vector3>();
+        normalSet.Clear();
         foreach (var value in dictionary.Values)
         {
             for (var i = 0; i < value.Count; ++i)
@@ -206,9 +241,14 @@ public static class NormalSolver
         public int[] VertexIndex = new int[4];
 
         private int _reserved = 4;
-        private int _count;
+        private int _count = 0;
 
         public int Count { get { return _count; } }
+
+        public void Reset()
+        {
+            _count = 0;
+        }
 
         public void Add(int vertIndex, int triIndex)
         {
