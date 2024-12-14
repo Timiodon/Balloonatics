@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &146873698
 Transform:
   m_ObjectHideFlags: 0
@@ -171,11 +171,12 @@ MonoBehaviour:
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
+  _handleInterObjectCollisions: 1
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
   _bendingStiffness: 0.5
-  _tearingThreshold: 1
+  _tearingThreshold: 200
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
   _pressure: 1
@@ -614,6 +615,7 @@ MonoBehaviour:
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
+  _handleInterObjectCollisions: 1
   _friction: 0
   _stretchingStiffness: 100
   _overpressureStiffness: 50
@@ -727,6 +729,7 @@ MonoBehaviour:
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
+  _handleInterObjectCollisions: 1
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 50
@@ -994,6 +997,7 @@ MonoBehaviour:
   _useGravity: 0
   _externalTorque: {x: 0, y: 0, z: 0}
   _handleSelfCollision: 0
+  _handleInterObjectCollisions: 1
   _friction: 0
   q: {x: 0, y: 0, z: 0, w: 1}
   InvI0:
@@ -1141,6 +1145,7 @@ MonoBehaviour:
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
+  _handleInterObjectCollisions: 1
   _friction: 0
   _stretchingStiffness: 0.5
   _overpressureStiffness: 1
@@ -1253,6 +1258,7 @@ MonoBehaviour:
   _useGravity: 0
   _externalTorque: {x: 0, y: 0, z: 0}
   _handleSelfCollision: 0
+  _handleInterObjectCollisions: 1
   _friction: 0
   q: {x: 0, y: 0, z: 0, w: 1}
   InvI0:
@@ -1453,6 +1459,7 @@ MonoBehaviour:
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
+  _handleInterObjectCollisions: 1
   _friction: 0
   _stretchingStiffness: 50
   _overpressureStiffness: 1
@@ -1512,6 +1519,7 @@ MonoBehaviour:
   _useGravity: 0
   _externalTorque: {x: 0, y: 0, z: 0}
   _handleSelfCollision: 0
+  _handleInterObjectCollisions: 1
   _friction: 0
   q: {x: 0, y: 0, z: 0, w: 1}
   InvI0:
@@ -1640,6 +1648,7 @@ MonoBehaviour:
   - {fileID: 1181666203}
   - {fileID: 603764643}
   - {fileID: 1259940861}
+  - {fileID: 146873697}
   _simulationLoopSubsteps: 10
   _collisionHandler: {fileID: 2046839124}
   _handleCollisions: 1
@@ -1789,6 +1798,7 @@ MonoBehaviour:
   _useGravity: 1
   _externalTorque: {x: 0, y: 0, z: 0}
   _handleSelfCollision: 0
+  _handleInterObjectCollisions: 1
   _friction: 0
   q: {x: 0, y: 0, z: 0, w: 1}
   InvI0:

@@ -11,6 +11,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public bool UseGravity { get => _useGravity; }
     public bool UseHelium { get => _useHelium; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
     public float HashcellSize {  get => _hashcellSize; }
     public float Friction { get => _friction; }
 
@@ -36,9 +37,10 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [SerializeField]
     private int _nrOfGrabParticles = 20;
 
-    // Do not change this at runtime
     [SerializeField]
     private bool _handleSelfCollision = true;
+    [SerializeField]
+    private bool _handleInterObjectCollisions = true;
 
     [SerializeField]
     private float _friction = 0.0f;

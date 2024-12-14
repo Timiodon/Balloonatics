@@ -12,6 +12,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public List<IRigidConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
     public bool HandleSelfCollision { get => _handleSelfCollision; }
+    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
     public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
 
@@ -23,9 +24,11 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private Vector3 _externalTorque = Vector3.zero;
-    // Do not change this at runtime
+
     [SerializeField]
     private bool _handleSelfCollision = false;
+    [SerializeField]
+    private bool _handleInterObjectCollisions = true;
 
     private float _hashcellSize = 0.01f;
 
