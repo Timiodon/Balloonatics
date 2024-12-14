@@ -101,7 +101,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         //Debug.Log("_invIO: " + _invI0);
 
         _mouseFollowConstraints = new RigidMouseFollowConstraints();
-        _mouseFollowConstraints.AddConstraint(this, 1f);
+        _mouseFollowConstraints.AddConstraint(this, 100000f);
 
         // Add a ground collision constraint for every vertex of the rigidbody
         // First perform de-duplication
@@ -181,10 +181,10 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
         // Prevent incorrect flips (done by Matthias Mueller, but not sure how well this actually works; seems to cause some constant
         // flipping of _w in experiments)
-        if (q.w < 0)
-        {
-            _w = -_w;
-        }
+        //if (q.w < 0)
+        //{
+        //    _w = -_w;
+        //}
     }
 
     public Vector3 WorldToLocal(Vector3 worldPos)
@@ -219,7 +219,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         if (Mathf.Approximately(Particles[0].W, 0))
             return 0;
 
-        return Particles[0].W + Vector3.Dot(Vector3.Cross(WorldToLocal(worldPos), n), InvI0.CwiseProduct(Vector3.Cross(WorldToLocal(worldPos), n)));
+        return Particles[0].W + Vector3.Dot(Vector3.Cross(worldPos - Particles[0].X, n), InvI0.CwiseProduct(Vector3.Cross(worldPos - Particles[0].X, n)));
     }
 
     // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of zero
@@ -252,7 +252,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].X += Particles[0].W * lambda * n;
 
         // Angular correction v1
-        Vector3 w = 0.5f * lambda * InvI0.CwiseProduct(Vector3.Cross(WorldToLocal(worldPos), n));
+        Vector3 w = 0.5f * lambda * InvI0.CwiseProduct(Vector3.Cross(worldPos - Particles[0].X, n));
         Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * q;
         q.x += dq.x;
         q.y += dq.y;
