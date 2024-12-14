@@ -222,6 +222,34 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         return Particles[0].W + Vector3.Dot(Vector3.Cross(worldPos - Particles[0].X, n), InvI0.CwiseProduct(Vector3.Cross(worldPos - Particles[0].X, n)));
     }
 
+    // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of invMassOther
+    public void ApplyCorrection(float compliance, Vector3 correction, Vector3 worldPos, float deltaT, Particle[] softBodyParticles, int softBodyParticleIndex)
+    {
+        if (Mathf.Approximately(correction.sqrMagnitude, 0f))
+            return;
+
+        float C = correction.magnitude;
+        Vector3 n = correction.normalized;
+
+        // Compute generalized inverse mass
+        float w = GetInverseMass(n, worldPos);
+
+        // Note we don't have to add w2 since it's zero
+        w += softBodyParticles[softBodyParticleIndex].W;
+
+        if (Mathf.Approximately(w, 0))
+            return;
+
+        float alpha = compliance / deltaT / deltaT;
+        float lambda = -C / (w + alpha);
+
+        //Debug.Log("Constraint force: " + lambda * n / (deltaT * deltaT));
+        ApplyCorrection(-lambda, n, worldPos);
+
+        // Apply position correction to softbody particle
+        softBodyParticles[softBodyParticleIndex].X += softBodyParticles[softBodyParticleIndex].W * lambda * n;
+    }
+
     // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of zero
     public void ApplyCorrection(float compliance, Vector3 correction, Vector3 worldPos, float deltaT)
     {
