@@ -11,7 +11,6 @@ public class BalloonHouse : RigidBody
     [SerializeField]
     private Material _ropeMaterial;
 
-
     private int[] _attachementParticleIndex;
     private LineRenderer[] _ropes;
     private Vector3 _rbLocalPos;
@@ -25,10 +24,10 @@ public class BalloonHouse : RigidBody
         _ropes = new LineRenderer[_balloons.Count];
         // Attach the balloons to the house
         for (int i = 0; i < _balloons.Count; i++)
-		{
-			var _clothToRigidStretchingConstraints = new ClothToRigidStretchingConstraints();
-			// Find particle that has the lowest Y value
-			Particle lowestParticle = _balloons[i].Particles[0];
+        {
+            var _clothToRigidStretchingConstraints = new ClothToRigidStretchingConstraints();
+            // Find particle that has the lowest Y value
+            Particle lowestParticle = _balloons[i].Particles[0];
             int lowestParticleIndex = 0;
             for (int j = 1; j < _balloons[i].Particles.Length; j++)
             {
@@ -58,8 +57,8 @@ public class BalloonHouse : RigidBody
 
             // Attach balloon to highest, middle y value of house and lowest particle of balloon
             _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPos);
-			Constraints.Add(_clothToRigidStretchingConstraints);
-		}
+            Constraints.Add(_clothToRigidStretchingConstraints);
+        }
 
     }
 

@@ -175,12 +175,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &16103100
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -408,7 +408,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0.10905999, y: 0.86064136, z: -0.20768371, w: -0.4519623}
-  m_LocalPosition: {x: 3.0742292, y: 1.6937795, z: 3.9862633}
+  m_LocalPosition: {x: 4.21, y: 3.78, z: 2.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -467,25 +467,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2fe1733c04ad514fa1664ec2dedefc0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e2897f278d8193428bf4b6a228e0088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  capture: 0
-  _active: 1
-  _enableRotation: 0
-  _toggleRotationEnabled: 102
-  _mouseSensitivity: 1.8
-  _enableTranslation: 1
-  _translationSpeed: 55
-  _enableMovement: 1
-  _movementSpeed: 10
-  _boostedSpeed: 50
-  _boostSpeed: 304
-  _moveUp: 101
-  _moveDown: 113
-  _enableSpeedAcceleration: 1
-  _speedAccelerationFactor: 1.5
-  _initPositonButton: 114
+  followObject: {fileID: 1181666204}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,7 +634,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
+  - {fileID: 2100000, guid: 19d733fd6a13c664ebb844ce1e60869f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -716,12 +701,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!1 &620254187
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,12 +763,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &620254190
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -807,7 +792,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 19d733fd6a13c664ebb844ce1e60869f, type: 2}
+  - {fileID: 2100000, guid: d3d553dc8691b9a42927545472026662, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1015,12 +1000,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &840719399
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1216,12 +1201,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &995435279
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1245,7 +1230,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
+  - {fileID: 2100000, guid: 114a9766150f7184c8b43f649ad1e174, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1331,12 +1316,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &1088525821
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1360,7 +1345,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
+  - {fileID: 2100000, guid: d3d553dc8691b9a42927545472026662, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1518,6 +1503,7 @@ MonoBehaviour:
   _handleSelfCollision: 0
   _handleInterObjectCollisions: 1
   _friction: 0
+  _performAngularCorrection: 1
   q: {x: 0, y: 0, z: 0, w: 1}
   InvI0:
     e00: 0
@@ -1662,12 +1648,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &1634969134
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1691,7 +1677,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 19d733fd6a13c664ebb844ce1e60869f, type: 2}
+  - {fileID: 2100000, guid: 114a9766150f7184c8b43f649ad1e174, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1829,7 +1815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 598917f30cca4a44d87452cbf6daccfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particleRadius: 0.04
+  _particleRadius: 0.06
   _selfCollisionDistanceScale: 2
   _interObjecCollisiontDistanceScale: 2
 --- !u!4 &2046839125
@@ -1903,12 +1889,12 @@ MonoBehaviour:
   _enforceMaxSpeed: 1
   _handleInterObjectCollisions: 1
   _stretchingStiffness: 50
-  _overpressureStiffness: 50
+  _overpressureStiffness: 40
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.02
+  _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
   _bendingComplianceScale: 1
-  _pressure: 1.1
+  _pressure: 1.2
 --- !u!23 &2138385979
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1932,7 +1918,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 19d733fd6a13c664ebb844ce1e60869f, type: 2}
+  - {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
