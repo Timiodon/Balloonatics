@@ -59,7 +59,11 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
             Vector3 a2 = _rb.LocalToWorld(constraint.RbLocalPos);
             Vector3 a1 = _sbParticles[constraint.SbParticleIndex].X;
             Vector3 n = (a2 - a1).normalized;
-            float C = Vector3.Distance(a2, a1) - constraint.RestLength;
+			float dist = Vector3.Distance(a2, a1);
+			if (dist < constraint.RestLength)
+				continue;
+
+			float C = dist - constraint.RestLength;
 
             // Compute generalized inverse masses
             float w1 = _sbParticles[constraint.SbParticleIndex].W; // no invIO contribution
