@@ -38,7 +38,7 @@ public class SpatialHashGrid
     public SpatialHashGrid(float cellSize, int maxNumObjects)
     {
         _cellSize = cellSize;
-        _tableSize = 20 * maxNumObjects;
+        _tableSize = 40 * maxNumObjects;
         _table = new int[_tableSize + 1];
         _gridEntries = new int[maxNumObjects];
         Neighbours = new(maxNumObjects);

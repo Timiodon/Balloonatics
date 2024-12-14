@@ -119,7 +119,7 @@ public class CollisionHandler : MonoBehaviour
                     // Self-Collisions are handled separately
                     if (objIdx == neighbourObjIdx && obj.HandleSelfCollision)
                         HandleSelfCollision(obj, _originalPositions[objIdx], objParticleIdx, neighbourObjParticleIdx);
-                    else if (obj.HandleInterObjectCollisions)
+                    else if (obj.HandleInterObjectCollisions || Objects[neighbourObjIdx].HandleInterObjectCollisions)
                         HandleInterObjectCollision(obj, Objects[neighbourObjIdx], objParticleIdx, neighbourObjParticleIdx);
                 }
             }
@@ -186,15 +186,35 @@ public class CollisionHandler : MonoBehaviour
             return;
 
         // position correction
+        UnityEngine.Debug.Log("Hello");
         float dist = collisionDir.magnitude;
         float corrScale = 0.5f * (minDist - dist) / dist;
-        obj.Particles[objParticleIdx].X -= corrScale * collisionDir;
-        neighbourObj.Particles[neighbourObjParticleIdx].X += corrScale * collisionDir;
-
-        // apply momentum conservation
         float massObj = obj.Particles[objParticleIdx].M;
         float massNeighbour = neighbourObj.Particles[neighbourObjParticleIdx].M;
         float totalMass = massObj + massNeighbour;
+        if (obj.HandleInterObjectCollisions)
+        {
+            if (obj is RigidBody body)
+            {
+                float weight = 1f - (massObj / totalMass);
+                body.ApplyCorrection(-corrScale * weight, collisionDir, obj.Particles[objParticleIdx].X);
+            }
+            else
+                obj.Particles[objParticleIdx].X -= corrScale * collisionDir;
+        }
+
+        if (neighbourObj.HandleInterObjectCollisions)
+        {
+            if (neighbourObj is RigidBody neighbourBody)
+            {
+                float weight = 1f - (massNeighbour / totalMass);
+                neighbourBody.ApplyCorrection(corrScale * weight, collisionDir, neighbourObj.Particles[neighbourObjParticleIdx].X);
+            }
+            else
+                neighbourObj.Particles[neighbourObjParticleIdx].X += corrScale * collisionDir;
+        }
+
+        // apply momentum conservation
         obj.Particles[objParticleIdx].V = 
             ((massObj - massNeighbour) / totalMass) * obj.Particles[objParticleIdx].V + (2f * massNeighbour / totalMass) * neighbourObj.Particles[neighbourObjParticleIdx].V;
         neighbourObj.Particles[neighbourObjParticleIdx].V =
