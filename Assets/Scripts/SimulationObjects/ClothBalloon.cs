@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
@@ -16,6 +16,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public float Friction { get => _friction; }
 
     private Mesh _mesh;
+    private MeshCollider _meshCollider;
 
     // The edges that need to be removed from the mesh this step because they have been torn apart.
     private HashSet<(int, int)> _tornEdges = new();
@@ -96,6 +97,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public void Initialize()
     {
         _mesh = GetComponent<MeshFilter>().mesh;
+        _meshCollider = GetComponent<MeshCollider>();
 
         // Vertices are usually duplicated in meshes so each quad can have it's own set of verts. We don't want duplicate particles so we have to do this mapping.
         int n = _mesh.vertices.Length;
@@ -296,6 +298,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             _mesh.RecalculateNormals();
         }
         _mesh.RecalculateBounds();
+        _meshCollider.sharedMesh = null;
+        _meshCollider.sharedMesh = _mesh;
     }
 
     void TearEdges(List<(int, int)> edges)
