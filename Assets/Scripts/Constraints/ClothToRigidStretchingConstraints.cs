@@ -60,14 +60,12 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
             Vector3 a1 = _sbParticles[constraint.SbParticleIndex].X;
             Vector3 n = (a2 - a1).normalized;
             float dist = Vector3.Distance(a2, a1);
-            if (dist < constraint.RestLength)
-                continue;
 
             float C = dist - constraint.RestLength;
 
             // Compute generalized inverse masses
             float w1 = _sbParticles[constraint.SbParticleIndex].W; // no invIO contribution
-            float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(constraint.RbLocalPos, n), _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.RbLocalPos, n)));
+            float w2 = xNew[0].W + Vector3.Dot(Vector3.Cross(constraint.RbLocalPos, n), _rb.InvI0.CwiseProduct(Vector3.Cross(constraint.RbLocalPos, n)));
 
             // Compute lagrange multiplier
             float lambda = -C / (w1 + w2 + _compliance / (deltaT * deltaT));
@@ -75,7 +73,7 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
             // Update states
             _sbParticles[constraint.SbParticleIndex].X += w1 * lambda * -n; // TODO: maybe use n instead?
             xNew[0].X += w2 * lambda * n;
-            Vector3 w = 0.5f * lambda * _rb.InvI0.MultiplyVector(Vector3.Cross(constraint.RbLocalPos, n));
+            Vector3 w = 0.5f * lambda * _rb.InvI0.CwiseProduct(Vector3.Cross(constraint.RbLocalPos, n));
             Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * _rb.q;
             _rb.q.x = _rb.q.x + dq.x;
             _rb.q.y = _rb.q.y + dq.y;
