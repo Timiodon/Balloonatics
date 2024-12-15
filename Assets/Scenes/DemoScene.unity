@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -176,14 +177,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &16103100
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -694,6 +696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -705,14 +708,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!1 &620254187
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,6 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -770,14 +775,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &620254190
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -999,6 +1005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -1010,14 +1017,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &840719399
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1203,6 +1211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -1214,14 +1223,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &995435279
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1321,6 +1331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -1332,14 +1343,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &1088525821
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1641,6 +1653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -1652,14 +1665,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &1634969134
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1885,6 +1899,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bcab91c3ce5f0419b469502b2df1f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Popped: 0
   _totalMass: 1
   _useGravity: 1
   _useHelium: 1
@@ -1896,14 +1911,15 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingCosntraint: 0
+  _useBendingConstraint: 0
   _stretchingStiffness: 70
   _overpressureStiffness: 40
   _bendingStiffness: 0.5
   _tearingThreshold: 0.015
   _stretchingComplianceScale: 2
-  _bendingComplianceScale: 1
   _pressure: 3
+  _bendingComplianceScale: 1
+  _useUI: 0
 --- !u!23 &2138385979
 MeshRenderer:
   m_ObjectHideFlags: 0
