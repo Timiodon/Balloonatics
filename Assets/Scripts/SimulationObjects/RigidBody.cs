@@ -101,7 +101,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         //Debug.Log("_invIO: " + _invI0);
 
         _mouseFollowConstraints = new RigidMouseFollowConstraints();
-        _mouseFollowConstraints.AddConstraint(this, 100000f);
+        _mouseFollowConstraints.AddConstraint(this, 20f);
 
         // Add a ground collision constraint for every vertex of the rigidbody
         // First perform de-duplication

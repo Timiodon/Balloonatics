@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BalloonHouse : RigidBody
 {
+    public List<ClothBalloon> BalloonList { get => _balloons; }
     [SerializeField]
     private List<ClothBalloon> _balloons;
 

@@ -35,7 +35,7 @@ public class SoftBodyUIController : MonoBehaviour
     private Slider _bendingComplianceSlider;
 
 
-    public void Awake()
+    void Awake()
     {
         _selfColToggle.onValueChanged.AddListener(UpdateSelfCollision);
         _interObjToggle.onValueChanged.AddListener(UpdateInterObjectCollisions);
