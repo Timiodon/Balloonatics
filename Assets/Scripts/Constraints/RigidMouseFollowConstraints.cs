@@ -8,7 +8,7 @@ public class RigidMouseFollowConstraints : IRigidConstraints
 
     private RigidBody _rb;
     private float _restLength = 0f; // the way this is set up, rest length is always 0
-    private float _compliance;
+    private float _compliance = 0f;
 
     public bool AddConstraint(RigidBody rb, float stiffness)
     {

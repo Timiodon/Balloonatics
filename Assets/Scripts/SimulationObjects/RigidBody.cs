@@ -35,6 +35,9 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     [SerializeField]
     private float _friction = 0.0f;
 
+    [SerializeField]
+    private bool _updateAngularVelocity = true;
+
     public enum Shape
     {
         Cube,
@@ -43,7 +46,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     }
 
     public Quaternion q = Quaternion.identity; // Current orientation of the rigidbody
-    public Matrix4x4 InvI0; // Inverse of the initial moment of inertia (note that we use a 4x4 matrix since Unity doesn't have 3x3 matrices)
+    public Vector3 InvI0; // Inverse of the initial moment of inertia
 
     [SerializeField]
     private Shape _shape = Shape.Cube;
@@ -90,13 +93,15 @@ public class RigidBody : MonoBehaviour, ISimulationObject
                 Izz = Ixx;
                 break;
         }
-        InvI0 = Matrix4x4.Scale(new Vector3(1f / Ixx, 1f / Iyy, 1f / Izz));
+
+        InvI0 = new Vector3(1f / Ixx, 1f / Iyy, 1f / Izz);
+        //InvI0 = Matrix4x4.Scale(new Vector3(1f / Ixx, 1f / Iyy, 1f / Izz));
 
         // Print _invIO for debugging
         //Debug.Log("_invIO: " + _invI0);
 
         _mouseFollowConstraints = new RigidMouseFollowConstraints();
-        _mouseFollowConstraints.AddConstraint(this, 1f);
+        _mouseFollowConstraints.AddConstraint(this, 100000f);
 
         // Add a ground collision constraint for every vertex of the rigidbody
         // First perform de-duplication
@@ -150,7 +155,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
         // Integrate angular velocity and orientation
         qPrev = q;
-        _w += deltaT * InvI0.MultiplyVector(_externalTorque);
+        _w += deltaT * _externalTorque.CwiseProduct(InvI0);
 
         Quaternion dq = new Quaternion(_w.x, _w.y, _w.z, 0);
         dq *= q;
@@ -167,13 +172,16 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].V = (Particles[0].X - Particles[0].P) / deltaT;
 
         // Matthias Müller version
-        Quaternion dq = q * Quaternion.Inverse(qPrev);
-        //dq.Normalize();
-        _w = new Vector3(dq.x, dq.y, dq.z) * (2 / deltaT);
+        if (_updateAngularVelocity)
+        {
+            Quaternion dq = q * Quaternion.Inverse(qPrev);
+            //dq.Normalize();
+            _w = new Vector3(dq.x, dq.y, dq.z) * (2 / deltaT);
+        }
 
         // Prevent incorrect flips (done by Matthias Mueller, but not sure how well this actually works; seems to cause some constant
         // flipping of _w in experiments)
-        //if (dq.w < 0)
+        //if (q.w < 0)
         //{
         //    _w = -_w;
         //}
@@ -211,7 +219,35 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         if (Mathf.Approximately(Particles[0].W, 0))
             return 0;
 
-        return Particles[0].W + Vector3.Dot(Vector3.Cross(WorldToLocal(worldPos), n), InvI0.MultiplyVector(Vector3.Cross(WorldToLocal(worldPos), n)));
+        return Particles[0].W + Vector3.Dot(Vector3.Cross(worldPos - Particles[0].X, n), InvI0.CwiseProduct(Vector3.Cross(worldPos - Particles[0].X, n)));
+    }
+
+    // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of invMassOther
+    public void ApplyCorrection(float compliance, Vector3 correction, Vector3 worldPos, float deltaT, Particle[] softBodyParticles, int softBodyParticleIndex)
+    {
+        if (Mathf.Approximately(correction.sqrMagnitude, 0f))
+            return;
+
+        float C = correction.magnitude;
+        Vector3 n = correction.normalized;
+
+        // Compute generalized inverse mass
+        float w = GetInverseMass(n, worldPos);
+
+        // Note we don't have to add w2 since it's zero
+        w += softBodyParticles[softBodyParticleIndex].W;
+
+        if (Mathf.Approximately(w, 0))
+            return;
+
+        float alpha = compliance / deltaT / deltaT;
+        float lambda = -C / (w + alpha);
+
+        //Debug.Log("Constraint force: " + lambda * n / (deltaT * deltaT));
+        ApplyCorrection(-lambda, n, worldPos);
+
+        // Apply position correction to softbody particle
+        softBodyParticles[softBodyParticleIndex].X += softBodyParticles[softBodyParticleIndex].W * lambda * n;
     }
 
     // Apply correction at localPos to the rigid body, assuming other object has a generalized inverse mass of zero
@@ -244,7 +280,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         Particles[0].X += Particles[0].W * lambda * n;
 
         // Angular correction v1
-        Vector3 w = 0.5f * lambda * InvI0.MultiplyVector(Vector3.Cross(WorldToLocal(worldPos), n));
+        Vector3 w = 0.5f * lambda * InvI0.CwiseProduct(Vector3.Cross(worldPos - Particles[0].X, n));
         Quaternion dq = new Quaternion(w.x, w.y, w.z, 0) * q;
         q.x += dq.x;
         q.y += dq.y;

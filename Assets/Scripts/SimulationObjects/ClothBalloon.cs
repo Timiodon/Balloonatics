@@ -14,6 +14,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
     public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
+    public bool Popped = false;
 
     private Mesh _mesh;
     private MeshCollider _meshCollider;
@@ -56,7 +57,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private bool _useOverpressureConstraint = true;
     [SerializeField]
     private bool _useBendingCosntraint = true;
-    
+
     [Header("Constraint stiffnesses")]
     [SerializeField]
     private float _stretchingStiffness = 0.5f;
@@ -87,7 +88,6 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private int[] vertexIdToParticleIdMap;
 
     private float _mouseDistance;
-    private bool _popped = false;
 
     private OverpressureConstraints _overpressureConstraints;
     private StretchingConstraints _stretchingConstraints;
@@ -189,7 +189,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             }
         }
         _normalSolver = new(_mesh);
-        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints};
+        Constraints = new List<IClothConstraints> { _stretchingConstraints, _overpressureConstraints, _bendingConstraints };
         Debug.Log(this.gameObject.name + ": " + Particles.Length + " number of Particles \n");
     }
 
@@ -204,7 +204,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
             // For helium, we assume it exactly cancels gravity at pressure = 1 and scales linearly with pressure
             // Helium is only active if the object did not pop
-            float heliumAcc = (UseHelium && !_popped) ? 10 * _overpressureConstraints.Pressure : 0;
+            float heliumAcc = (UseHelium && !Popped) ? 10 * _overpressureConstraints.Pressure : 0;
             float gravityAcc = UseGravity ? ISimulationObject.GRAVITY : 0;
             Particles[i].V.y += (heliumAcc + gravityAcc) * deltaT;
 
@@ -269,7 +269,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
         if (_tornEdges.Count > 0)
         {
-            _popped = true;
+            Popped = true;
             var removeMask = new System.Collections.BitArray(_mesh.triangles.Length);
             for (int i = 0; i < _mesh.triangles.Length; i += 3)
             {
@@ -310,7 +310,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         foreach (IClothConstraints constraint in Constraints)
         {
             constraint.RemoveEdgeConstraints(edges);
-        }      
+        }
     }
 
     // Code adapted from: https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/14-cloth.html#L208
