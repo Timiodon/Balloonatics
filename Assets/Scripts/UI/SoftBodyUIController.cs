@@ -1,9 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SoftBodyUIController : MonoBehaviour
 {
     ClothBalloon _selectedClothBallon;
+
+    [Header("Selected")]
+    [SerializeField]
+    private TMP_Text _selectedText;
 
     [Header("Collisions")]
     [SerializeField]
@@ -29,9 +34,6 @@ public class SoftBodyUIController : MonoBehaviour
     [SerializeField]
     private Slider _bendingComplianceSlider;
 
-    [Header("Buttons")]
-    [SerializeField]
-    private Button _saveAndExit;
 
     public void Awake()
     {
@@ -46,13 +48,12 @@ public class SoftBodyUIController : MonoBehaviour
         _stretchingComplianceSlider.onValueChanged.AddListener(UpdateStretchingCompliance);
         _pressureSlider.onValueChanged.AddListener(UpdatePressure);
         _bendingComplianceSlider.onValueChanged.AddListener(UpdateBendingCompliance);
-
-        _saveAndExit.onClick.AddListener(SaveAndExit);
     }
 
     public void InitializeUI(ClothBalloon clothBalloon)
     {
         _selectedClothBallon = clothBalloon;
+        _selectedText.text = clothBalloon.name;
         
         _selfColToggle.isOn = clothBalloon.HandleSelfCollision;
         _interObjToggle.isOn = clothBalloon.HandleInterObjectCollisions;
@@ -110,11 +111,5 @@ public class SoftBodyUIController : MonoBehaviour
     private void UpdateBendingCompliance(float value)
     {
         _selectedClothBallon.BendingComplianceScale = value;
-    }
-
-    private void SaveAndExit()
-    {
-        gameObject.SetActive(false);
-        Time.timeScale = 1.0f; 
     }
 }

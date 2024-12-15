@@ -18,8 +18,6 @@ public class ClickOnSoftBody : MonoBehaviour, IPointerDownHandler
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            Time.timeScale = 0.0f;
-            _softBodyMenu.SetActive(true);
             _softBodyUIController.InitializeUI(_clothBalloon);
         }
     }
