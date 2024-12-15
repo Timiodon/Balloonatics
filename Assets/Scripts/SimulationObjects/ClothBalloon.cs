@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshFilter), typeof(AudioSource))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
@@ -39,6 +39,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
 
     [SerializeField]
     private int _nrOfGrabParticles = 20;
+
+    private AudioSource _audioSource;
 
     [Header("Collisions")]
     [SerializeField]
@@ -109,6 +111,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public void Initialize()
     {
         _mesh = GetComponent<MeshFilter>().mesh;
+        _audioSource = GetComponent<AudioSource>();
         if (_useUI)
             _meshCollider = GetComponent<MeshCollider>();
 
@@ -270,6 +273,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             displacedVertices[i] = transform.InverseTransformPoint(Particles[vertexIdToParticleIdMap[i]].X);
         }
 
+        _mesh.vertices = displacedVertices;
+
         _stretchingConstraints.ComplianceScale = _stretchingComplianceScale;
         _stretchingConstraints.TearingThreshold = _tearingThreshold;
         _stretchingConstraints.Enabled = _useStretchingConstraint;
@@ -278,10 +283,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _overpressureConstraints.Pressure = _pressure;
         _overpressureConstraints.Enabled = _useOverpressureConstraint;
 
-        _mesh.vertices = displacedVertices;
 
         if (_tornEdges.Count > 0)
         {
+            if (_tornEdges.Count > 0 && !Popped)
+                _audioSource.Play();
+
             Popped = true;
             var removeMask = new System.Collections.BitArray(_mesh.triangles.Length);
             for (int i = 0; i < _mesh.triangles.Length; i += 3)
