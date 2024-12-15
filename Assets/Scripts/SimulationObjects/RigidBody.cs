@@ -11,8 +11,8 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     public Particle[] Particles { get; set; }
     public List<IRigidConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
-    public bool HandleSelfCollision { get => _handleSelfCollision; }
-    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
+    public bool HandleSelfCollision { get => _handleSelfCollision; set => _handleSelfCollision = value; }
+    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; set => _handleInterObjectCollisions = value; }
     public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
 

@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
+[RequireComponent(typeof(MeshFilter))]
 public class ClothBalloon : MonoBehaviour, ISimulationObject
 {
     public Particle[] Particles { get; set; }
     public List<IClothConstraints> Constraints { get; private set; }
     public bool UseGravity { get => _useGravity; }
     public bool UseHelium { get => _useHelium; }
-    public bool HandleSelfCollision { get => _handleSelfCollision; }
-    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; }
+    public bool HandleSelfCollision { get => _handleSelfCollision; set => _handleSelfCollision = value; }
+    public bool HandleInterObjectCollisions { get => _handleInterObjectCollisions; set => _handleInterObjectCollisions = value; }
     public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
     public bool Popped = false;
@@ -47,16 +47,20 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     private float _friction = 0.0f;
     [SerializeField]
     private bool _enforceMaxSpeed = true;
+    public bool EnforceMaxSpeed { get => _enforceMaxSpeed; set => _enforceMaxSpeed = value; }
     [SerializeField]
     private bool _handleInterObjectCollisions = true;
 
     [Header("Constraints")]
     [SerializeField]
     private bool _useStretchingConstraint = true;
+    public bool UseStretchingConstraint { get => _useStretchingConstraint; set => _useStretchingConstraint = value; }
     [SerializeField]
     private bool _useOverpressureConstraint = true;
+    public bool UseOverpressureConstraint { get => _useOverpressureConstraint; set => _useOverpressureConstraint = value; }
     [SerializeField]
-    private bool _useBendingCosntraint = true;
+    private bool _useBendingConstraint = true;
+    public bool UseBendingConstraint { get => _useBendingConstraint; set => _useBendingConstraint = value; }
 
     [Header("Constraint stiffnesses")]
     [SerializeField]
@@ -77,12 +81,20 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     [Header("Compliance Scales")]
     [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _stretchingComplianceScale = 1f;
-
-    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
-    private float _bendingComplianceScale = 1f;
+    public float StretchingComplianceScale { get => _stretchingComplianceScale; set => _stretchingComplianceScale = value; }
 
     [SerializeField, Range(30f * MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
     private float _pressure = 1f;
+    public float Pressure { get => _pressure; set => _pressure = value; }
+
+    [SerializeField, Range(MIN_COMPLIANCE_SCALE, MAX_COMPLIANCE_SCALE)]
+    private float _bendingComplianceScale = 1f;
+    public float BendingComplianceScale { get => _bendingComplianceScale; set => _bendingComplianceScale = value; }
+
+    [Header("UI")]
+    [SerializeField]
+    private bool _useUI = true;
+
 
     private Vector3[] displacedVertices;
     private int[] vertexIdToParticleIdMap;
@@ -97,7 +109,8 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public void Initialize()
     {
         _mesh = GetComponent<MeshFilter>().mesh;
-        _meshCollider = GetComponent<MeshCollider>();
+        if (_useUI)
+            _meshCollider = GetComponent<MeshCollider>();
 
         // Vertices are usually duplicated in meshes so each quad can have it's own set of verts. We don't want duplicate particles so we have to do this mapping.
         int n = _mesh.vertices.Length;
@@ -261,7 +274,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _stretchingConstraints.TearingThreshold = _tearingThreshold;
         _stretchingConstraints.Enabled = _useStretchingConstraint;
         _bendingConstraints.ComplianceScale = _bendingComplianceScale;
-        _bendingConstraints.Enabled = _useBendingCosntraint;
+        _bendingConstraints.Enabled = _useBendingConstraint;
         _overpressureConstraints.Pressure = _pressure;
         _overpressureConstraints.Enabled = _useOverpressureConstraint;
 
@@ -298,8 +311,12 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
             _mesh.RecalculateNormals();
         }
         _mesh.RecalculateBounds();
-        _meshCollider.sharedMesh = null;
-        _meshCollider.sharedMesh = _mesh;
+
+        if (_useUI)
+        {
+            _meshCollider.sharedMesh = null;
+            _meshCollider.sharedMesh = _mesh;
+        }
     }
 
     void TearEdges(List<(int, int)> edges)
