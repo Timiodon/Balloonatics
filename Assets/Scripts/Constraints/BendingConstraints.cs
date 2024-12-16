@@ -120,8 +120,7 @@ public class BendingConstraints : IClothConstraints
             float cosPhi = Vector3.Dot(n1, n2);
             cosPhi = Mathf.Clamp(cosPhi, -1.0f, 1.0f);
             float phi = Mathf.Acos(cosPhi);
-
-            // Real phi = (-0.6981317 * dot * dot - 0.8726646) * dot + 1.570796;	// fast approximation
+            //float phi = (-0.6981317f * cosPhi * cosPhi - 0.8726646f) * cosPhi + 1.570796f;
 
             float lambda =
                 w0 * u0.sqrMagnitude +
@@ -135,11 +134,6 @@ public class BendingConstraints : IClothConstraints
                 solveMarker.End();
                 return;
             }    
-
-            // stability
-            // 1.5 is the largest magic number I found to be stable in all cases :-)
-            //if (stiffness > 0.5 && fabs(phi - b.restAngle) > 1.5)		
-            //	stiffness = 0.5;
 
             lambda = -(phi - constraint.RestAngle) / lambda;
             if (lambda == 0.0)
