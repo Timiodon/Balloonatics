@@ -329,7 +329,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     void TearEdges(List<(int, int)> edges)
     {
         _tornEdges.UnionWith(edges);
-        _handleSelfCollision = false;
+        _enforceMaxSpeed = false;
 
         foreach (IClothConstraints constraint in Constraints)
         {

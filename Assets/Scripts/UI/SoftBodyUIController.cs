@@ -4,7 +4,7 @@ using TMPro;
 
 public class SoftBodyUIController : MonoBehaviour
 {
-    ClothBalloon _selectedClothBallon;
+    ClothBalloon _selectedClothBallon = null;
 
     [Header("Selected")]
     [SerializeField]
@@ -70,46 +70,55 @@ public class SoftBodyUIController : MonoBehaviour
 
     private void UpdateSelfCollision(bool value)
     {
-        _selectedClothBallon.HandleSelfCollision = value;
+        if (_selectedClothBallon != null) 
+            _selectedClothBallon.HandleSelfCollision = value;
     }
 
     private void UpdateInterObjectCollisions(bool value)
     {
-        _selectedClothBallon.HandleInterObjectCollisions = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.HandleInterObjectCollisions = value;
     }
 
     private void UpdateMaxSpeed(bool value)
     {
-        _selectedClothBallon.EnforceMaxSpeed = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.EnforceMaxSpeed = value;
     }
 
     private void UpdateStretchingConstraint(bool value)
     {
-        _selectedClothBallon.UseStretchingConstraint = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.UseStretchingConstraint = value;
     }
 
     private void UpdateOverpressureConstraint(bool value)
     {
-        _selectedClothBallon.UseOverpressureConstraint = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.UseOverpressureConstraint = value;
     }
 
     private void UpdateBendingConstraint(bool value)
     {
-        _selectedClothBallon.UseBendingConstraint = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.UseBendingConstraint = value;
     }
 
     private void UpdateStretchingCompliance(float value)
     {
-        _selectedClothBallon.StretchingComplianceScale = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.StretchingComplianceScale = value;
     }
 
     private void UpdatePressure(float value)
     {
-        _selectedClothBallon.Pressure = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.Pressure = value;
     }
 
     private void UpdateBendingCompliance(float value)
     {
-        _selectedClothBallon.BendingComplianceScale = value;
+        if (_selectedClothBallon != null)
+            _selectedClothBallon.BendingComplianceScale = value;
     }
 }
