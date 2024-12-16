@@ -330,6 +330,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     {
         _tornEdges.UnionWith(edges);
         _enforceMaxSpeed = false;
+        _useBendingConstraint = false;
 
         foreach (IClothConstraints constraint in Constraints)
         {
