@@ -25,6 +25,8 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
     private Particle[] _sbParticles;
     private float _compliance = 0f; // infinite stiffness for all constraints
 
+	public bool enabled = true;
+
     public bool AddConstraint(RigidBody rb, float stiffness)
     {
         return false; // not used
@@ -53,6 +55,9 @@ public class ClothToRigidStretchingConstraints : IRigidConstraints
 
     public void SolveConstraints(Particle[] xNew, float deltaT)
     {
+		if (!enabled)
+			return;
+
         foreach (ClothToRigidStretchingConstraint constraint in _constraints)
         {
             // 1 for softbody, 2 for rigidbody

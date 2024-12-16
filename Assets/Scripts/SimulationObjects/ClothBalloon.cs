@@ -15,6 +15,7 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
     public float HashcellSize { get => _hashcellSize; }
     public float Friction { get => _friction; }
     public bool Popped = false;
+    public bool Detached = false; // This flag is set to detach from balloon house
 
     private Mesh _mesh;
     private MeshCollider _meshCollider;

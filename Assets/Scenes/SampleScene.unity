@@ -276,6 +276,19 @@ MonoBehaviour:
   _pressure: 1
   _bendingComplianceScale: 1
   _useUI: 1
+--- !u!114 &32420773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32420766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05e065fb26887244fbe925f0fe9f256c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _softBodyMenu: {fileID: 948884992}
 --- !u!1 &34004674
 GameObject:
   m_ObjectHideFlags: 0
@@ -7199,6 +7212,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: 98f7146f1a3768c4e9d01796f444558c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 32420768}
+    - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: 98f7146f1a3768c4e9d01796f444558c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 32420773}
   m_SourcePrefab: {fileID: 100100000, guid: 98f7146f1a3768c4e9d01796f444558c, type: 3}
 --- !u!1 &1987450114
 GameObject:
