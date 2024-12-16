@@ -777,6 +777,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 2e228282134f7424f9b7e2f18cfbbdac, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2e228282134f7424f9b7e2f18cfbbdac, type: 3}
       propertyPath: m_Name
       value: gallery_scene
@@ -2095,13 +2099,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4690104, y: -0.5240478, z: 0.5580542, w: 0.44043013}
+  m_LocalRotation: {x: 0.5340106, y: -0.1032145, z: 0.7521273, w: 0.3721343}
   m_LocalPosition: {x: 10.479805, y: 4.5183973, z: 4.737805}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 798618107}
-  m_LocalEulerAnglesHint: {x: 93.6, y: -99.91, z: 0}
+  m_LocalEulerAnglesHint: {x: 146.447, y: -119.341, z: -32.64502}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6947,6 +6951,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7635826562936255635, guid: 6e1b3deae5c08664289b173823cdcc2a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4966200ce18bbf04497c1cefa43192da, type: 2}
     - target: {fileID: 919132149155446097, guid: 6e1b3deae5c08664289b173823cdcc2a, type: 3}
       propertyPath: m_Name
       value: lowpoly_bunny_383v
