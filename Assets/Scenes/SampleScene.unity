@@ -3322,7 +3322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &932820056
 Transform:
   m_ObjectHideFlags: 0
@@ -4062,7 +4062,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1205662230
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4155,7 +4155,7 @@ MonoBehaviour:
   _handleInterObjectCollisions: 1
   _useStretchingConstraint: 1
   _useOverpressureConstraint: 1
-  _useBendingConstraint: 1
+  _useBendingConstraint: 0
   _stretchingStiffness: 1
   _overpressureStiffness: 1
   _bendingStiffness: 1
@@ -4612,10 +4612,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationGameObjects:
-  - {fileID: 1205662228}
+  - {fileID: 1181666203}
   - {fileID: 603764643}
   - {fileID: 146873697}
-  - {fileID: 1747501606}
+  - {fileID: 1259940861}
   - {fileID: 1490820985}
   - {fileID: 2068663795}
   - {fileID: 716709334}
@@ -4959,7 +4959,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1468509820
 Transform:
   m_ObjectHideFlags: 0
@@ -5812,7 +5812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1747501607
 Transform:
   m_ObjectHideFlags: 0
