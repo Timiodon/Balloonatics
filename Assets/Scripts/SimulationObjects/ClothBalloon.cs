@@ -123,15 +123,15 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         Dictionary<Vector3, int> positionToParticleMap = new();
         for (int i = 0; i < n; i++)
         {
-            displacedVertices[i] = _mesh.vertices[i];
-            if (positionToParticleMap.TryGetValue(_mesh.vertices[i], out int particleIndex))
+            displacedVertices[i] = _mesh.vertices[i].CwiseProduct(transform.localScale);
+            if (positionToParticleMap.TryGetValue(_mesh.vertices[i].CwiseProduct(transform.localScale), out int particleIndex))
             {
                 vertexIdToParticleIdMap[i] = particleIndex;
             }
             else
             {
                 int nextIndex = positionToParticleMap.Count;
-                positionToParticleMap[_mesh.vertices[i]] = nextIndex;
+                positionToParticleMap[_mesh.vertices[i].CwiseProduct(transform.localScale)] = nextIndex;
                 vertexIdToParticleIdMap[i] = nextIndex;
             }
         }
