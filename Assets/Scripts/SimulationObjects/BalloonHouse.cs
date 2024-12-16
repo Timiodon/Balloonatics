@@ -19,6 +19,8 @@ public class BalloonHouse : RigidBody
     private LineRenderer[] _ropes;
     private Vector3[] _rbLocalPoses;
 
+	private ClothToRigidStretchingConstraints[] _constraints;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -27,10 +29,11 @@ public class BalloonHouse : RigidBody
         _attachementParticleIndex = new int[_balloons.Count];
         _ropes = new LineRenderer[_balloons.Count];
         _rbLocalPoses = new Vector3[_balloons.Count];
-        // Attach the balloons to the house
-        for (int i = 0; i < _balloons.Count; i++)
+		_constraints = new ClothToRigidStretchingConstraints[_balloons.Count];
+		// Attach the balloons to the house
+		for (int i = 0; i < _balloons.Count; i++)
         {
-            var _clothToRigidStretchingConstraints = new ClothToRigidStretchingConstraints();
+			_constraints[i] = new ClothToRigidStretchingConstraints();
             // Find particle that has the lowest Y value
             Particle lowestParticle = _balloons[i].Particles[0];
             int lowestParticleIndex = 0;
@@ -61,9 +64,9 @@ public class BalloonHouse : RigidBody
             _ropes[i].SetPosition(0, _balloons[i].Particles[lowestParticleIndex].X);
             _ropes[i].SetPosition(1, LocalToWorld(_rbLocalPoses[i]));
 
-            // Attach balloon to highest, middle y value of house and lowest particle of balloon
-            _clothToRigidStretchingConstraints.AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPoses[i]);
-            Constraints.Add(_clothToRigidStretchingConstraints);
+			// Attach balloon to highest, middle y value of house and lowest particle of balloon
+			_constraints[i].AddConstraint(this, _balloons[i].Particles, lowestParticleIndex, _rbLocalPoses[i]);
+            Constraints.Add(_constraints[i]);
         }
 
     }
@@ -74,9 +77,10 @@ public class BalloonHouse : RigidBody
 
         for (int i = 0; i < _balloons.Count; i++)
         {
-            if (_balloons[i].Popped)
+            if (_balloons[i].Popped || _balloons[i].Detached)
             {
                 _ropes[i].enabled = false;
+				_constraints[i].enabled = false;
                 continue;
             }
             //Debug.DrawLine(_balloons[i].Particles[_attachementParticleIndex[i]].X, LocalToWorld(_rbLocalPos), Color.white);
