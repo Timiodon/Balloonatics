@@ -4612,9 +4612,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationGameObjects:
-  - {fileID: 1181666203}
-  - {fileID: 1259940861}
+  - {fileID: 1205662228}
   - {fileID: 603764643}
+  - {fileID: 146873697}
+  - {fileID: 1747501606}
   - {fileID: 1490820985}
   - {fileID: 2068663795}
   - {fileID: 716709334}
@@ -4958,7 +4959,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1468509820
 Transform:
   m_ObjectHideFlags: 0
@@ -5839,7 +5840,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: ab53a93c9a70c454a836c9c07a58e3fb, type: 3}
   m_Resource: {fileID: 8300000, guid: ab53a93c9a70c454a836c9c07a58e3fb, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -5974,7 +5975,7 @@ MonoBehaviour:
   Popped: 0
   _totalMass: 1
   _useGravity: 1
-  _useHelium: 1
+  _useHelium: 0
   _useRuntimeNormalSmoothing: 1
   _nrOfGrabParticles: 20
   _handleSelfCollision: 1
@@ -5987,7 +5988,7 @@ MonoBehaviour:
   _stretchingStiffness: 0.5
   _overpressureStiffness: 1
   _bendingStiffness: 0.5
-  _tearingThreshold: 0.05
+  _tearingThreshold: 10
   _stretchingComplianceScale: 1
   _pressure: 1
   _bendingComplianceScale: 1
