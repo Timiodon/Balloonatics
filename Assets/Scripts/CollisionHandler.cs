@@ -78,7 +78,7 @@ public class CollisionHandler : MonoBehaviour
         {
             createGridMarker.Begin();
             int _currentAllParticleIdx = 0;
-            for(int i = 0; i < Objects.Length; i++)
+            for (int i = 0; i < Objects.Length; i++)
             {
                 var obj = Objects[i];
                 Array.Copy(obj.Particles, 0, _allParticles, _currentAllParticleIdx, obj.Particles.Length);
@@ -125,7 +125,7 @@ public class CollisionHandler : MonoBehaviour
                     else
                     {
                         if (obj.HandleInterObjectCollisions || Objects[neighbourObjIdx].HandleInterObjectCollisions)
-                            HandleInterObjectCollision(obj, Objects[neighbourObjIdx], objParticleIdx, neighbourObjParticleIdx);
+                            HandleInterObjectCollision(obj, Objects[neighbourObjIdx], objParticleIdx, neighbourObjParticleIdx, deltaT);
                     }
                 }
             }
@@ -177,7 +177,7 @@ public class CollisionHandler : MonoBehaviour
         }
     }
 
-    private void HandleInterObjectCollision(ISimulationObject obj, ISimulationObject neighbourObj, int objParticleIdx, int neighbourObjParticleIdx)
+    private void HandleInterObjectCollision(ISimulationObject obj, ISimulationObject neighbourObj, int objParticleIdx, int neighbourObjParticleIdx, float deltaT)
     {
         float minDist = _interObjecCollisiontDistanceScale * _particleRadius;
         float minDist2 = minDist * minDist;
@@ -202,7 +202,7 @@ public class CollisionHandler : MonoBehaviour
             if (obj is RigidBody body)
             {
                 float weight = 1f - (massObj / totalMass);
-                body.ApplyCorrection(-corrScale * weight, collisionDir, obj.Particles[objParticleIdx].X);
+                body.ApplyCorrection(0, -collisionDir * corrScale, obj.Particles[objParticleIdx].X, deltaT);
             }
             else
                 obj.Particles[objParticleIdx].X -= corrScale * collisionDir;
@@ -213,14 +213,14 @@ public class CollisionHandler : MonoBehaviour
             if (neighbourObj is RigidBody neighbourBody)
             {
                 float weight = 1f - (massNeighbour / totalMass);
-                neighbourBody.ApplyCorrection(corrScale * weight, collisionDir, neighbourObj.Particles[neighbourObjParticleIdx].X);
+                neighbourBody.ApplyCorrection(0, corrScale * collisionDir, neighbourObj.Particles[neighbourObjParticleIdx].X, deltaT);
             }
             else
                 neighbourObj.Particles[neighbourObjParticleIdx].X += corrScale * collisionDir;
         }
 
         // apply momentum conservation
-        obj.Particles[objParticleIdx].V = 
+        obj.Particles[objParticleIdx].V =
             ((massObj - massNeighbour) / totalMass) * obj.Particles[objParticleIdx].V + (2f * massNeighbour / totalMass) * neighbourObj.Particles[neighbourObjParticleIdx].V;
         neighbourObj.Particles[neighbourObjParticleIdx].V =
             ((massNeighbour - massObj) / totalMass) * neighbourObj.Particles[neighbourObjParticleIdx].V + (2f * massObj / totalMass) * obj.Particles[objParticleIdx].V;

@@ -1,7 +1,7 @@
 using System.Linq;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.Profiling;
 using UnityEngine.SceneManagement;
 
 public class Solver : MonoBehaviour
@@ -97,15 +97,26 @@ public class Solver : MonoBehaviour
                 simulationObject.CorrectVelocities(scaledDeltaT);
                 correctVelocitiesMarker.End();
             }
+
+            foreach (ISimulationObject simulationObject in _simulationObjects)
+            {
+                updateMeshMarker.Begin();
+                if (simulationObject is RigidBody)
+                    simulationObject.UpdateMesh();
+                updateMeshMarker.End();
+            }
         }
-        subStepMarker.End();
 
         foreach (ISimulationObject simulationObject in _simulationObjects)
         {
             updateMeshMarker.Begin();
-            simulationObject.UpdateMesh();
+            if (simulationObject is ClothBalloon)
+                simulationObject.UpdateMesh();
             updateMeshMarker.End();
         }
+
+        subStepMarker.End();
+
     }
 
     void Update()
