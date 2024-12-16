@@ -145,7 +145,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
 
 
     // Initial guess for next position and velocity
-    public void Precompute(float deltaT, float maxSpeed)
+    public virtual void Precompute(float deltaT, float maxSpeed)
     {
         if (_useGravity)
             Particles[0].V.y += ISimulationObject.GRAVITY * deltaT;
@@ -167,7 +167,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
     }
 
     // Correct velocity to match corrected positions, needs to additionally update angular velocity
-    public void CorrectVelocities(float deltaT)
+    public virtual void CorrectVelocities(float deltaT)
     {
         Particles[0].V = (Particles[0].X - Particles[0].P) / deltaT;
 
@@ -197,7 +197,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         return Particles[0].X + q * localPos;
     }
 
-    public void SolveConstraints(float deltaT)
+    public virtual void SolveConstraints(float deltaT)
     {
         foreach (IRigidConstraints constraint in Constraints)
         {
@@ -205,7 +205,7 @@ public class RigidBody : MonoBehaviour, ISimulationObject
         }
     }
 
-    public void UpdateMesh()
+    public virtual void UpdateMesh()
     {
         transform.SetPositionAndRotation(Particles[0].X, q);
         for (int i = 0; i < _localParticlePositions.Length; i++)

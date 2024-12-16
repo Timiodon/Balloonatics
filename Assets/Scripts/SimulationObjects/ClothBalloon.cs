@@ -425,4 +425,13 @@ public class ClothBalloon : MonoBehaviour, ISimulationObject
         _mouseDistance += Input.mouseScrollDelta.y * 0.1f;
     }
 
+    private void OnDrawGizmos()
+    {
+        if (Particles != null)
+            foreach (Particle p in Particles)
+            {
+                Gizmos.DrawSphere(p.X, 0.05f);
+            }
+    }
+
 }
