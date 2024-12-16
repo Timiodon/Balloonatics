@@ -201,7 +201,6 @@ public class CollisionHandler : MonoBehaviour
         {
             if (obj is RigidBody body)
             {
-                float weight = 1f - (massObj / totalMass);
                 body.ApplyCorrection(0, -collisionDir * corrScale, obj.Particles[objParticleIdx].X, deltaT);
             }
             else
@@ -212,7 +211,6 @@ public class CollisionHandler : MonoBehaviour
         {
             if (neighbourObj is RigidBody neighbourBody)
             {
-                float weight = 1f - (massNeighbour / totalMass);
                 neighbourBody.ApplyCorrection(0, corrScale * collisionDir, neighbourObj.Particles[neighbourObjParticleIdx].X, deltaT);
             }
             else
