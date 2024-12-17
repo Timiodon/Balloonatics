@@ -10,7 +10,7 @@
 You can trade off performance for accuracy by changing the `Simulation Loop Substeps` attribute (which controls the number of subloop iterations of the XPBD algorithm) of the `Solver` Script attached to the `Solver` GameObject located in the `Hierarchy` view. Note that the `DemoScene` and the `LiveDemoScene` run with more than 60 FPS in realtime on one of our PCs and the `SampleScene` runs with 20-50 FPS. 
 The `DemoScene` in particular is the one we showed live at the presentation, so it should even run in realtime on a laptop.
 
-Another thing you can try is to change the timescale under `Edit > Project Settings > Time` to something smaller than 1.
+Another thing you can try to improve performance is to change the timescale under `Edit > Project Settings > Time` to something smaller than 1.
 
 # What parts of the project were done by us?
 - We wrote all of the Scripts contained in `Project > Assets > Scripts` ourselves, except for the `FreeFlyCamera.cs` as well as the `NormalSolver.cs`, but the latter one we optimized to reduce garbage collection.
