@@ -4,7 +4,7 @@
 
 # How to run a demo scene
 1. In the opened Unity project, you can find three pre-arranged demo-scenes under `Project > Assets > Scenes`
-2. To run any of those in the editor, you can just open it with a double click and then press the play button in the Unity editor. However, for better performance, you might want to build a standalon application, which you can do under `File > Build Profiles`, where you can select the scene you want to build, as well as other building options. When you are finished, you can press `Build and Run`
+2. To run any of those in the editor, you can just open it with a double click and then press the play button in the Unity editor. However, for better performance, you might want to build a standalone application, which you can do under `File > Build Profiles`, where you can select the scene you want to build, as well as other building options. When you are finished, you can press `Build and Run`
 
 # What to do, if the performance is bad?
 You can trade off performance for accuracy by changing the `Simulation Loop Substeps` attribute (which controls the number of subloop iterations of the XPBD algorithm) of the `Solver` Script attached to the `Solver` GameObject located in the `Hierarchy` view. Note that the `DemoScene` and the `LiveDemoScene` run with more than 60 FPS in realtime on one of our PCs and the `SampleScene` runs with 20-50 FPS. 
